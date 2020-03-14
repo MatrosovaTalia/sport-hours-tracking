@@ -2,7 +2,7 @@ DROP TABLE Users CASCADE;
 
 DROP TABLE Instructors CASCADE;
 
-DROP TABLE SportActivity CASCADE;
+DROP TABLE SportActivities CASCADE;
 
 DROP TABLE Clubs CASCADE;
 
@@ -16,4 +16,4 @@ DROP TABLE Hours CASCADE;
 
 DROP TABLE ClubParticipants CASCADE;
 
-DROP TABLE PrimarySportActivity CASCADE;
+DROP TABLE PrimarySportActivities CASCADE;

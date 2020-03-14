@@ -8,14 +8,13 @@ CREATE TABLE Instructors (
     id INTEGER REFERENCES Users(id) PRIMARY KEY
 );
 
-CREATE TABLE SportActivity (
+CREATE TABLE SportActivities (
     id SERIAL PRIMARY KEY,
     name VARCHAR NOT NULL
 );
 
 CREATE TABLE Clubs (
-    id INTEGER REFERENCES SportActivity(id) PRIMARY KEY,
-    name VARCHAR NOT NULL,
+    id INTEGER REFERENCES SportActivities(id) PRIMARY KEY,
     link VARCHAR
 );
 
@@ -35,6 +34,7 @@ CREATE TABLE Students (
 CREATE TABLE Hours (
     date DATE NOT NULL,
     student_id INTEGER REFERENCES Students(id) NOT NULL,
+    activity_id INTEGER REFERENCES SportActivities(id) NOT NULL,
     hours_number INTEGER NOT NULL CHECK(hours_number > 0),
     PRIMARY KEY (date, student_id)
 );
@@ -45,7 +45,7 @@ CREATE TABLE ClubParticipants(
     PRIMARY KEY (club_id, student_id)
 );
 
-CREATE TABLE PrimarySportActivity(
+CREATE TABLE PrimarySportActivities(
     student_id INTEGER REFERENCES Students(id) PRIMARY KEY,
-    activity_id INTEGER REFERENCES SportActivity(id) NOT NULL
+    activity_id INTEGER REFERENCES SportActivities(id) NOT NULL
 );

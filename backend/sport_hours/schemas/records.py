@@ -1,11 +1,11 @@
 from sport.extensions import ma
-from sport_hours.models import SportHours
-from sport_hours.models import ActivityAssignment
+from sport_hours.models import SportHoursRecords
+from sport_hours.models import ActivityAssignments
 
 class SportHoursSchema(ma.ModelSchema):
     class Meta:
-        model = SportActivity
+        model = SportHoursRecords
 
 class ActivityAssignmentSchema(ma.ModelSchema):
     class Meta:
-        model = ActivityAssignment
+        model = ActivityAssignments

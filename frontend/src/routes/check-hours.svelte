@@ -15,8 +15,7 @@
   let activities = null;
   let chosenUser = null;
   let chosenActivity = null;
-  let chosenDate = null;
-  let chosenHours = null;
+  let records = null;
 
   async function getActivities(evt) {
     chosenUser = evt.target.value;
@@ -24,21 +23,10 @@
     activities = await resp.json();
   }
 
-  async function submit() {
-    let resp = await api.post(`/activities/${chosenActivity}/attendance`, {
-      data: {
-        student_id: chosenUser,
-        hours_number: chosenHours,
-        date: chosenDate,
-      },
-    });
-
-    if (resp.ok) {
-      chosenUser = null;
-      chosenActivity = null;
-      chosenDate = null;
-      chosenHours = null;
-    }
+  async function showRecords(evt) {
+    chosenActivity = evt.target.value;
+    let resp = await api.get(`/activities/${chosenActivity}/attendance?student_id=${chosenUser}`);
+    records = await resp.json();
   }
 </script>
 
@@ -55,7 +43,7 @@
   </select>
 
   <label for="student">Choose an activity:</label>
-  <select name="student" disabled={activities == null} bind:value={chosenActivity}>
+  <select name="student" disabled={activities == null} on:change={showRecords}>
     <option disabled selected value> – Select – </option>
     {#if activities != null}
       {#each activities as activity (activity.id)}
@@ -64,17 +52,20 @@
     {/if}
   </select>
 
-  <label for="date">Choose a date:</label>
-  <input type="date" bind:value={chosenDate} name="date" disabled={activities == null} />
-
-  <label for="hours">How many hours for the day?</label>
-  <input type="number" bind:value={chosenHours} name="hours" min={1} disabled={activities == null} />
-
-  <button
-    type="button"
-    on:click={submit}
-    disabled={!([chosenUser, chosenActivity, chosenDate, chosenHours].every(x => !!x))}
-  >
-    Save
-  </button>
+  {#if records != null}
+    <table>
+      <thead>
+        <th>Date</th>
+        <th>Hours</th>
+      </thead>
+      <tbody>
+        {#each records as record (record.id)}
+          <tr>
+            <td>{record.date}</td>
+            <td>{record.hours_number}</td>
+          </tr>
+        {/each}
+      </tbody>
+    </table>
+  {/if}
 </form>

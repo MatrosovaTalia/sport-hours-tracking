@@ -1,1 +1,1 @@
-from .test import *
+from .sport_activities import *

@@ -1,11 +1,14 @@
-from sport.extensions import ma
-from sport_hours.models import SportActivities
-from sport_hours.models import Clubs
+from sport_hours.extensions import ma, db
+from sport_hours.models import SportActivity, Club
+
 
 class SportActivitySchema(ma.ModelSchema):
     class Meta:
-        model = SportActivities
+        model = SportActivity
+        sqla_session = db.session
+
 
 class ClubSchema(ma.ModelSchema):
     class Meta:
-        model = Clubs
+        model = Club
+        sqla_session = db.session

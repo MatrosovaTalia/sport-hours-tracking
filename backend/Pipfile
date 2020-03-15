@@ -10,6 +10,7 @@ psycopg2-binary = "*"
 flask-marshmallow = "*"
 marshmallow-sqlalchemy = "*"
 flask-migrate = "*"
+flask-cors = "*"
 
 [dev-packages]
 

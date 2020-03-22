@@ -28,12 +28,9 @@ def get_all_clubs():
     return out_schema.jsonify(clubs)
 
 
-@api.route('/activity')
-def get_activity_by_id():
-    activity = SportActivity.query.filter_by(id=request.args.get('id')).one_or_none()
-
-    if activity is None:
-        return ('', 404)
+@api.route('/activities/<int:activity_id>', methods=['GET'])
+def get_activity_by_id(activity_id):
+    activity = SportActivity.query.get_or_404(activity_id)
 
     out_schema = SportActivitySchema(many=False, exclude=('assigned_students',))
     return out_schema.jsonify(activity)
@@ -50,13 +47,10 @@ def create_sport_activity():
     return ('', 204)
 
 
-@api.route('/activities/<int:id>', methods=['PUT'])
-def modify_sport_activity(id):
+@api.route('/activities/<int:activity_id>', methods=['PUT'])
+def modify_sport_activity(activity_id):
     in_schema = SportActivitySchema(exclude=('id',))
-    record_in_db = SportActivity.query.filter_by(id=id).one_or_none()
-
-    if record_in_db is None:
-        return ('', 404)
+    record_in_db = SportActivity.query.get_or_404(activity_id)
 
     in_schema.load(request.json, session=db.session, instance=record_in_db, partial=True)
     
@@ -65,29 +59,26 @@ def modify_sport_activity(id):
     return ('', 204)
 
 
-@api.route('/activities/<int:id>', methods=['DELETE'])
-def delete_activity(id):
-    SportActivity.query.filter_by(id=id).delete()
+@api.route('/activities/<int:activity_id>', methods=['DELETE'])
+def delete_activity(activity_id):
+    SportActivity.query.filter_by(id=activity_id).delete()
     db.session.commit()
 
     return ('', 204)
 
 
-@api.route('/activities/clubs/<int:id>', methods=['PUT'])
-def create_club(id):
-    activity = SportActivity.query.filter_by(id=id).one_or_none()
-    
-    if activity is None:
-        return ('', 404)
+@api.route('/activities/clubs/<int:club_id>', methods=['PUT'])
+def create_club(club_id):
+    SportActivity.query.get_or_404(club_id)
 
     in_schema = ClubSchema(exclude=('id',))
-    record_in_db = Club.query.filter_by(id=id).one_or_none()
+    record_in_db = Club.query.get(club_id)
 
     if record_in_db:
         in_schema.load(request.json, session=db.session, instance=record_in_db, partial=True)
     else:
         club_record = in_schema.load(request.json)
-        club_record.id = id
+        club_record.id = club_id
 
         db.session.add(club_record)
     
@@ -96,9 +87,9 @@ def create_club(id):
     return ('', 204)
 
 
-@api.route('/activities/clubs/<int:id>', methods=['DELETE'])
-def delete_club(id):
-    Club.query.filter_by(id=id).delete()
+@api.route('/activities/clubs/<int:club_id>', methods=['DELETE'])
+def delete_club(club_id):
+    Club.query.filter_by(id=club_id).delete()
     db.session.commit()
 
     return ('', 204)

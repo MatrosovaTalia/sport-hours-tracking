@@ -9,7 +9,7 @@
 </script>
 
 <div>
-        <p id = "textp">Chose user to enter the service:<p>
+        <p id = "textp">Choose user to enter the service:<p>
         <p><select name="Student">
             <option disabled selected>--Choose User--</option>
             {#each users as user}

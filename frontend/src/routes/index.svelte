@@ -5,4 +5,6 @@
 <div style="display: flex; flex-direction: column;">
 	<a href="/track-attendance" rel="prefetch">Track attendance</a>
 	<a href="/check-hours" rel="prefetch">View attendance statistics</a>
+	
+	<a href="/choose-user" rel="prefetch">Choose user</a>
 </div>

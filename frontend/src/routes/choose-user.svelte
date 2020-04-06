@@ -1,11 +1,17 @@
+<script context="module">
+  import getInitialData from '@/utils/get-initial-data.js';
+
+  export async function preload(page, session) {
+    return await getInitialData(this, session, new Map([
+      ['users', '/users'],
+    ]));
+  }
+</script>
+
 <script>
-    let users = [
-        {id: '1', name: 'Lev Chelyadinov'},
-        {id: '2', name: 'Natalia Matrosova'},
-        {id: '3', name: 'Vladislav Kantaev'},
-        {id: '4', name: 'Marina Ivanova'},
-        {id: '5', name: 'Alexandr Grichshenko'},
-    ]
+  import * as api from '@/utils/api.js';
+
+  export let users;
 </script>
 
 <div>
@@ -17,7 +23,7 @@
             {/each}
         </select></p>
         <div>
-            <a href="http://10.90.138.82/">
+            <a href="/" rel="prefetch">
             <input type="submit" value="Continue">
             </a>
         </div>

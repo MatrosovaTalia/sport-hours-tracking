@@ -1,6 +1,5 @@
 <script context="module">
   import getInitialData from '@/utils/get-initial-data.js';
-
   export async function preload(page, session) {
     return await getInitialData(this, session, new Map([
       ['users', '/users'],
@@ -10,7 +9,6 @@
 
 <script>
   import * as api from '@/utils/api.js';
-
   export let users;
 </script>
 
@@ -19,7 +17,7 @@
         <p><select name="Student">
             <option disabled selected>--Choose User--</option>
             {#each users as user}
-            <option id={user.id}>{user.name}</option>
+            <option id={user.id}>{user.full_name}</option>
             {/each}
         </select></p>
         <div>
@@ -33,7 +31,6 @@
     div{
     font-family: Electrica, sans-serif;
     }
-
     #textp{
         font-weight: bold;
         font-size: 25px;
@@ -46,7 +43,6 @@
         border-color: violet;
         border-radius: 10px;
     }
-
     input{
         padding: 8px 8px 8px 8px;
         font-family: Electrica, sans-serif;

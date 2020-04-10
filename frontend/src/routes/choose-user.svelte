@@ -10,14 +10,15 @@
 <script>
   import * as api from '@/utils/api.js';
   export let users;
+  let choosenUser;
 </script>
 
 <div>
         <p id = "textp">Choose user to enter the service:<p>
-        <p><select name="Student">
-            <option disabled selected>--Choose User--</option>
-            {#each users as user}
-            <option id={user.id}>{user.full_name}</option>
+        <p><select name="User" bind:value={choosenUser}>
+            <option disabled selected> – Choose User – </option>
+            {#each users as user(user.email)}
+            <option value={user.email}>{user.full_name}</option>
             {/each}
         </select></p>
         <div>

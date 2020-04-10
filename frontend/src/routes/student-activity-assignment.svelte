@@ -1,49 +1,59 @@
-<script>
-    let activities = [
-        {id: '10', name: 'Breakdance, Friday, 17:00-18:30'},
-	{id: '11', name: 'Breakdance, Saturday, 13:00-14:30'},
-        {id: '20', name: 'Swimming, Friday, 9:00-10:00'},
-	{id: '21', name: 'Swimming, Wednessday, 9:00-10:00'},
-        {id: '3', name: 'Stretching, Monday, 15:00-16:30'},
-        {id: '4', name: 'Fitness trainings, Thursday, 8:30-10:00'},
-        {id: '5', name: 'Backetball, Wednessday, 18:00-20:00'},
-    ];
-	let chosenUser = 1;
-	let chosenActivity;
-	let assignments = [{ActivityID: 10, StudentID: chosenUser}];
+<script context="module">
+  import getInitialData from '@/utils/get-initial-data.js';
+  export async function preload(page, session) {
+    return await getInitialData(this, session, new Map([
+      ['activities', '/activities/all'],
+    ]));
+  }
+</script>
 
-	function assignStudent() {
-		assignments.push({ActivityID: chosenActivity, StudentID: chosenUser});
-		assignments = assignments;
+<script>
+  import * as api from '@/utils/api.js';
+  import { onMount } from 'svelte';
+  export let activities;
+	let chosenUser = 1;
+  let chosenActivity;
+	let assignments = null;
+
+  onMount(async () => {
+    let resp = await api.get(`/activities?assigned_to=${chosenUser}`);
+    assignments = await resp.json();
+  });
+
+		function assignStudent() {
+			assignments.push({id: chosenActivity.id, name: chosenActivity.name});
+			assignments = assignments;
 	}
 </script>
 
 <div>
         <p id = "textp">Choose sport activity to assign yourself:<p>
-	<p><select name="Activity" bind:value={chosenActivity}>
-            	<option disabled selected>--Choose  Sport Activity--</option>
-            	{#each activities as activity(activity.id)}
-            		<option value={activity.id}>{activity.name}</option>
-            	{/each}
+				<p><select name="Activity" bind:value={chosenActivity}>
+            <option disabled selected> – Choose  Sport Activity – </option>
+            {#each activities as activity(activity.id)}
+            <option value={activity}>{activity.name}</option>
+            {/each}
         </select></p>
-	<div>
-            	<input type="submit" value="Assign" on:click={assignStudent}>
+        <div>
+            <input type="submit" value="Assign" on:click={assignStudent}>
         </div>
 	{#if assignments != null}
-    	<table>
-      	<thead>
-        	<th>Your Sport Activities</th>
-      	</thead>
-      	<tbody>
-        {#each assignments as assignment (assignment.ActivityID)}
-          	<tr>
-            		<td>{assignment.ActivityID}</td>
-          	</tr>
+    <table>
+      <thead>
+        <th>Your Sport Activities</th>
+      </thead>
+      <tbody>
+        {#each assignments as assignment (assignment.id)}
+          <tr>
+            <td>{assignment.name}</td>
+          </tr>
         {/each}
-      	</tbody>
-    	</table>
-  	{/if}
+      </tbody>
+    </table>
+  {/if}
 </div>
+
+<a href="/" rel="prefetch">Go back</a>
 
 <style>
     div{

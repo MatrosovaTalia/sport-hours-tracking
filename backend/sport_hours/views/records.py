@@ -2,14 +2,11 @@ from flask import request
 from flask.views import MethodView
 
 
-import logging
-from flask_login import login_required, current_user
 from sport_hours.blueprints import api
 from sport_hours.extensions import db
 from sport_hours.models import SportActivity, SportHoursRecord, User
 from sport_hours.schemas import SportHoursRecordSchema
 
-log = logging.getLogger(__name__)
 
 
 class SportHoursRecordAPI(MethodView):

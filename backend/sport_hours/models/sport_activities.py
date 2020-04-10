@@ -1,4 +1,4 @@
- 
+
 from sport_hours.extensions import db
 
 
@@ -7,7 +7,7 @@ activity_assignment = db.Table(
     db.Column('activity_id', db.Integer,
               db.ForeignKey('sport_activities.id', ondelete='CASCADE'),
               primary_key=True),
-    db.Column('student_id', db.String(128),
+    db.Column('student_email', db.String(128),
               db.ForeignKey('users.email', ondelete='CASCADE'),
               primary_key=True)
 )

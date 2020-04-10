@@ -12,13 +12,12 @@ from sport_hours.schemas import SportHoursRecordSchema
 class SportHoursRecordAPI(MethodView):
     def get(self, activity_id):
         activity = SportActivity.query.get_or_404(activity_id)
-        student = User.query.get_or_404(request.args.get('student_id'))
-
+        student = User.query.get_or_404(request.args.get('student_email'))
 
         records = (
             # pylint: disable=bad-continuation
             SportHoursRecord.query
-                .filter_by(activity_id=activity.id, student_id=student.id)
+                .filter_by(activity_id=activity.id, student_email=student.email)
                 .order_by(SportHoursRecord.date.desc())
         )
         out_schema = SportHoursRecordSchema(many=True)
@@ -32,9 +31,9 @@ class SportHoursRecordAPI(MethodView):
         hours_record = in_schema.load(request.json)
         hours_record.activity_id = activity_id
 
-        User.query.get_or_404(hours_record.student_id)
+        User.query.get_or_404(hours_record.student_email)
 
-        record_in_db = SportHoursRecord.query.filter_by(student_id=hours_record.student_id,
+        record_in_db = SportHoursRecord.query.filter_by(student_email=hours_record.student_email,
                                                         activity_id=hours_record.activity_id,
                                                         date=hours_record.date).one_or_none()
         if record_in_db:

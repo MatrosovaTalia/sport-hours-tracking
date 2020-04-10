@@ -48,10 +48,10 @@ class AssignedStudentsAPI(MethodView):
         if not request.is_json:
             abort(400, 'The request must be in JSON.')
 
-        if not isinstance(request.json.get('student_id'), int):
-            abort(400, 'A valid student_id must be passed.')
+        if not isinstance(request.json.get('student_email'), str):
+            abort(400, 'A valid student_email must be passed.')
 
-        student = User.query.get_or_404(int(request.json['student_id']))
+        student = User.query.get_or_404(request.json['student_email'])
         activity = SportActivity.query.get_or_404(activity_id)
 
         activity.assigned_students.append(student)
@@ -63,10 +63,10 @@ class AssignedStudentsAPI(MethodView):
         if not request.is_json:
             abort(400, 'The request must be in JSON.')
 
-        if not isinstance(request.json.get('student_id'), int):
-            abort(400, 'A valid student_id must be passed.')
+        if not isinstance(request.json.get('student_email'), str):
+            abort(400, 'A valid student_email must be passed.')
 
-        student = User.query.get_or_404(int(request.json['student_id']))
+        student = User.query.get_or_404(request.json['student_email'])
         activity = SportActivity.query.get_or_404(activity_id)
 
         try:

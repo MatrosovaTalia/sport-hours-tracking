@@ -1,6 +1,7 @@
 from flask import request
 from flask.views import MethodView
 
+
 from sport_hours.blueprints import api
 from sport_hours.extensions import db
 from sport_hours.models import SportActivity, SportHoursRecord, User
@@ -12,6 +13,7 @@ class SportHoursRecordAPI(MethodView):
     def get(self, activity_id):
         activity = SportActivity.query.get_or_404(activity_id)
         student = User.query.get_or_404(request.args.get('student_id'))
+
 
         records = (
             # pylint: disable=bad-continuation

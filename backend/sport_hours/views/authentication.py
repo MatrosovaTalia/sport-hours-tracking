@@ -1,5 +1,4 @@
 from flask_login import login_user, logout_user, login_required
-from sport_hours.extensions import login_manager
 from flask import request, abort
 from sport_hours.blueprints import api
 from sport_hours.models import User
@@ -24,4 +23,3 @@ def logout():
 def test_login():
     print(request.args)
     return ''
-

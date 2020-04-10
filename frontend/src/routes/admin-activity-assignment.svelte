@@ -1,65 +1,63 @@
+<script context="module">
+  import getInitialData from '@/utils/get-initial-data.js';
+  export async function preload(page, session) {
+    return await getInitialData(this, session, new Map([
+      ['users', '/users'],
+      ['activities', '/activities/all'],
+    ]));
+  }
+</script>
+
 <script>
-    let users = [
-        {id: '1', name: 'Lev Chelyadinov'},
-        {id: '2', name: 'Natalia Matrosova'},
-        {id: '3', name: 'Vladislav Kantaev'},
-        {id: '4', name: 'Marina Ivanova'},
-        {id: '5', name: 'Alexandr Grichshenko'},
-    ] 
-		
-    let activities = [
-        {id: '10', name: 'Breakdance, Friday, 17:00-18:30'},
-	{id: '11', name: 'Breakdance, Saturday, 13:00-14:30'},
-        {id: '20', name: 'Swimming, Friday, 9:00-10:00'},
-	{id: '21', name: 'Swimming, Wednessday, 9:00-10:00'},
-        {id: '3', name: 'Stretching, Monday, 15:00-16:30'},
-        {id: '4', name: 'Fitness trainings, Thursday, 8:30-10:00'},
-        {id: '5', name: 'Backetball, Wednessday, 18:00-20:00'},
-    ];
+  import * as api from '@/utils/api.js';
+  export let users;
+  export let activities;
 		let chosenUser;
 		let chosenActivity;
-		let assignments = [{ActivityID: 10, StudentID: 1}];
+	export let assignments;
 
 		function assignStudent() {
-			assignments.push({ActivityID: chosenActivity, StudentID: chosenUser});
+			assignments.push({activity_id: chosenActivity, student_id: chosenUser});
 			assignments = assignments;
 	}
 </script>
 
 <div>
         <p id = "textp">Fill the form to assign student to sport activity:<p>
-	<p><select name="Activity" bind:value={chosenActivity}>
+				<p><select name="Activity" bind:value={chosenActivity}>
             <option disabled selected>--Choose  Sport Activity--</option>
             {#each activities as activity(activity.id)}
-            	<option value={activity.id}>{activity.name}</option>
+            <option value={activity.id}>{activity.name}</option>
             {/each}
         </select></p>
-	<p><select name="Student" bind:value={chosenUser}>
-            <option disabled selected>--Choose Student--</option>
+				<p><select name="Student" bind:value={chosenUser}>
+            <option disabled selected> – Choose Student – </option>
             {#each users as user(user.id)}
-            	<option value={user.id}>{user.name}</option>
+            <option value={user.id}>{user.full_name}</option>
             {/each}
         </select></p>
         <div>
             <input type="submit" value="Assign" on:click={assignStudent}>
         </div>
 	{#if assignments != null}
-    	<table>
-      	<thead>
-        	<th>Sport Activity</th>
-        	<th>Student</th>
-     	</thead>
-      	<tbody>
-        {#each assignments as assignment (assignment.ActivityID)}
-         <tr>
-         	<td>{assignment.ActivityID}</td>
-		<td>{assignment.StudentID}</td>
-         </tr>
+    <table>
+      <thead>
+        <th>Sport Activity</th>
+        <th>Student</th>
+      </thead>
+      <tbody>
+        {#each assignments as assignment (assignment.activity_id)}
+          <tr>
+            <td>{assignment.activity_id}</td>
+						<td>{assignment.student_id}</td>
+          </tr>
         {/each}
-      	</tbody>
-    	</table>
-  	{/if}
+      </tbody>
+    </table>
+  {/if}
 </div>
+
+<a href="/" rel="prefetch">Go back</a>
 
 <style>
     div{

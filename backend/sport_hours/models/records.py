@@ -1,3 +1,4 @@
+ 
 from sport_hours.extensions import db
 
 
@@ -7,6 +8,6 @@ class SportHoursRecord(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.Date, nullable=False)
-    student_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    student_id = db.Column(db.String(128), db.ForeignKey('users.email'), nullable=False)
     activity_id = db.Column(db.Integer, db.ForeignKey('sport_activities.id'), nullable=False)
     hours_number = db.Column(db.Integer, db.CheckConstraint('hours_number > 0'), nullable=False)

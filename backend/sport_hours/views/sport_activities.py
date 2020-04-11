@@ -6,7 +6,6 @@ from sport_hours.extensions import db
 from sport_hours.blueprints import api
 from sport_hours.models import User, SportActivity, Club
 from sport_hours.schemas import SportActivitySchema, ClubSchema
-from sport_hours.permissions import is_admin
 
 
 @api.route('/activities')
@@ -42,6 +41,54 @@ def get_activity_by_id(activity_id):
     return out_schema.jsonify(activity)
 
 
+class AssignedStudentsAPI(MethodView):
+    def get(self, activity_id):
+        '''Get a list of students assigned to an activity.'''
+        activity = SportActivity.query.get_or_404(activity_id)
+        out_schema = UserSchema(many=True, exclude=('roles', 'activities'))
+        return out_schema.jsonify(activity.assigned_students)
+
+    def post(self, activity_id):
+        '''Assign a given student to a sport activity.'''
+        if not request.is_json:
+            abort(400, 'The request must be in JSON.')
+
+        if not isinstance(request.json.get('student_email'), str):
+            abort(400, 'A valid student_email must be passed.')
+
+        student = User.query.get_or_404(request.json['student_email'])
+        activity = SportActivity.query.get_or_404(activity_id)
+
+        activity.assigned_students.append(student)
+        db.session.commit()
+        return ('', 204)
+
+    def delete(self, activity_id):
+        '''Unassign a given student from a sport activity.'''
+        if not request.is_json:
+            abort(400, 'The request must be in JSON.')
+
+        if not isinstance(request.json.get('student_email'), str):
+            abort(400, 'A valid student_email must be passed.')
+
+        student = User.query.get_or_404(request.json['student_email'])
+        activity = SportActivity.query.get_or_404(activity_id)
+
+        try:
+            activity.assigned_students.remove(student)
+        except ValueError:
+            pass
+
+        db.session.commit()
+        return ('', 204)
+
+
+asn_students_api = AssignedStudentsAPI.as_view('assigned_students_api')
+api.add_url_rule('/activities/<int:activity_id>/assigned',
+                 view_func=asn_students_api,
+                 methods=('GET', 'POST', 'DELETE'))
+
+
 @api.route('/activities/create', methods=['POST'])
 @login_required
 def create_sport_activity():
@@ -67,9 +114,9 @@ def modify_sport_activity(activity_id):
     record_in_db = SportActivity.query.get_or_404(activity_id)
 
     in_schema.load(request.json, session=db.session, instance=record_in_db, partial=True)
-    
+
     db.session.commit()
-    
+
     return ('', 204)
 
 
@@ -103,7 +150,7 @@ def create_club(club_id):
         club_record.id = club_id
 
         db.session.add(club_record)
-    
+
     db.session.commit()
 
     return ('', 204)

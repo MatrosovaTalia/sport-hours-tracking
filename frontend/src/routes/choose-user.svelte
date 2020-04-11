@@ -13,7 +13,7 @@
   let chosenUser;
 
     async function login() {
-      let resp = await api.post(`/login`, {
+      let resp = await api.put(`/login`, {
         data: {
           email: chosenUser,
         },

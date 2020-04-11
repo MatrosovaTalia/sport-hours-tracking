@@ -38,3 +38,8 @@ A record that indicates that a student is assigned to some sport activity.
 - **ActivityID** ```Integer, Foreign Key``` [(SportActivity.ID)](#sport-activity)
 
 ```Primary Key``` is the tuple (**StudentID**, **ActivityID**) since it is a many-to-many relationship.
+
+### Timetable
+
+- **ActivityID** ```Integer, Foreign Key``` [] [(SportActivity.ID)](#sport-activity)
+- **

@@ -1,6 +1,7 @@
 from sport_hours.blueprints import api
 from sport_hours.models import User
 from sport_hours.schemas import UserSchema
+from sport_hours.extensions import login_manager
 
 
 @login_manager.user_loader

@@ -1,13 +1,16 @@
 from flask import request, abort
 from flask.views import MethodView
+from flask_login import login_required, current_user
 
 from sport_hours.extensions import db
 from sport_hours.blueprints import api
 from sport_hours.models import User, SportActivity, Club
 from sport_hours.schemas import SportActivitySchema, ClubSchema
+from sport_hours.permissions import is_admin
 
 
 @api.route('/activities')
+@login_required
 def get_assigned_activities():
     student = User.query.get_or_404(request.args.get('assigned_to'))
     out_schema = SportActivitySchema(many=True, exclude=('assigned_students',))
@@ -15,6 +18,7 @@ def get_assigned_activities():
 
 
 @api.route('/activities/all')
+@login_required
 def get_all_activities():
     activities = SportActivity.query.all()
     out_schema = SportActivitySchema(many=True, exclude=('assigned_students',))
@@ -22,6 +26,7 @@ def get_all_activities():
 
 
 @api.route('/activities/clubs/all')
+@login_required
 def get_all_clubs():
     clubs = Club.query.all()
     out_schema = ClubSchema(many=True)
@@ -29,6 +34,7 @@ def get_all_clubs():
 
 
 @api.route('/activities/<int:activity_id>', methods=['GET'])
+@login_required
 def get_activity_by_id(activity_id):
     activity = SportActivity.query.get_or_404(activity_id)
 
@@ -37,7 +43,11 @@ def get_activity_by_id(activity_id):
 
 
 @api.route('/activities/create', methods=['POST'])
+@login_required
 def create_sport_activity():
+    if not is_admin(current_user):
+        return ('', 401)
+    
     in_schema = SportActivitySchema(exclude=('id',))
     activity_record = in_schema.load(request.json)
 
@@ -48,7 +58,11 @@ def create_sport_activity():
 
 
 @api.route('/activities/<int:activity_id>', methods=['PUT'])
+@login_required
 def modify_sport_activity(activity_id):
+    if not is_admin(current_user):
+        return ('', 401)
+    
     in_schema = SportActivitySchema(exclude=('id',))
     record_in_db = SportActivity.query.get_or_404(activity_id)
 
@@ -60,7 +74,11 @@ def modify_sport_activity(activity_id):
 
 
 @api.route('/activities/<int:activity_id>', methods=['DELETE'])
+@login_required
 def delete_activity(activity_id):
+    if not is_admin(current_user):
+        return ('', 401)
+    
     SportActivity.query.filter_by(id=activity_id).delete()
     db.session.commit()
 
@@ -68,7 +86,11 @@ def delete_activity(activity_id):
 
 
 @api.route('/activities/clubs/<int:club_id>', methods=['PUT'])
+@login_required
 def create_club(club_id):
+    if not is_admin(current_user):
+        return ('', 401)
+    
     SportActivity.query.get_or_404(club_id)
 
     in_schema = ClubSchema(exclude=('id',))
@@ -88,7 +110,11 @@ def create_club(club_id):
 
 
 @api.route('/activities/clubs/<int:club_id>', methods=['DELETE'])
+@login_required
 def delete_club(club_id):
+    if not is_admin(current_user):
+        return ('', 401)
+    
     Club.query.filter_by(id=club_id).delete()
     db.session.commit()
 

@@ -51,7 +51,7 @@ class AssignedStudentsAPI(MethodView):
 
     @login_required
     def post(self, activity_id):
-        if not current_user.is_admin():
+        if not current_user.is_admin:
             abort(401)
         
         '''Assign a given student to a sport activity.'''
@@ -70,7 +70,7 @@ class AssignedStudentsAPI(MethodView):
 
     @login_required
     def delete(self, activity_id):
-        if not current_user.is_admin():
+        if not current_user.is_admin:
             abort(401)
         
         '''Unassign a given student from a sport activity.'''
@@ -116,7 +116,7 @@ def create_sport_activity():
 @api.route('/activities/<int:activity_id>', methods=['PUT'])
 @login_required
 def modify_sport_activity(activity_id):
-    if not current_user.is_admin():
+    if not current_user.is_admin:
         abort(401)
     
     in_schema = SportActivitySchema(exclude=('id',))
@@ -132,7 +132,7 @@ def modify_sport_activity(activity_id):
 @api.route('/activities/<int:activity_id>', methods=['DELETE'])
 @login_required
 def delete_activity(activity_id):
-    if not current_user.is_admin():
+    if not current_user.is_admin:
         abort(401)
     
     SportActivity.query.filter_by(id=activity_id).delete()
@@ -144,7 +144,7 @@ def delete_activity(activity_id):
 @api.route('/activities/clubs/<int:club_id>', methods=['PUT'])
 @login_required
 def create_club(club_id):
-    if not current_user.is_admin():
+    if not current_user.is_admin:
         abort(401)
     
     SportActivity.query.get_or_404(club_id)
@@ -168,7 +168,7 @@ def create_club(club_id):
 @api.route('/activities/clubs/<int:club_id>', methods=['DELETE'])
 @login_required
 def delete_club(club_id):
-    if not current_user.is_admin():
+    if not current_user.is_admin:
         abort(401)
     
     Club.query.filter_by(id=club_id).delete()

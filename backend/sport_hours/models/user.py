@@ -19,5 +19,6 @@ class User(UserMixin, db.Model):
         """Return the user's e-mail."""
         return self.email
     
+    @property
     def is_admin(self):
         return 'Admin' in self.roles

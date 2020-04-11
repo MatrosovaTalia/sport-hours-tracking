@@ -25,7 +25,7 @@
 
   async function showRecords(evt) {
     chosenActivity = evt.target.value;
-    let resp = await api.get(`/activities/${chosenActivity}/attendance?student_id=${chosenUser}`);
+    let resp = await api.get(`/activities/${chosenActivity}/attendance?student_email=${chosenUser}`);
     records = await resp.json();
   }
 </script>
@@ -37,8 +37,8 @@
   <label for="student">Choose a student:</label>
   <select name="student" on:change={getActivities} value="choose">
     <option disabled selected value> – Select – </option>
-    {#each users as user (user.id)}
-      <option value={user.id}>{user.full_name}</option>
+    {#each users as user (user.email)}
+      <option value={user.email}>{user.full_name}</option>
     {/each}
   </select>
 

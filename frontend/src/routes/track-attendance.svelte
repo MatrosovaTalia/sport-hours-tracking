@@ -27,7 +27,7 @@
   async function submit() {
     let resp = await api.post(`/activities/${chosenActivity}/attendance`, {
       data: {
-        student_id: chosenUser,
+        student_email: chosenUser,
         hours_number: chosenHours,
         date: chosenDate,
       },
@@ -49,8 +49,8 @@
   <label for="student">Choose a student:</label>
   <select name="student" on:change={getActivities} value="choose">
     <option disabled selected value> – Select – </option>
-    {#each users as user (user.id)}
-      <option value={user.id}>{user.full_name}</option>
+    {#each users as user (user.email)}
+      <option value={user.email}>{user.full_name}</option>
     {/each}
   </select>
 

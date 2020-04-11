@@ -9,21 +9,28 @@
 
 <script>
   import * as api from '@/utils/api.js';
-  import { onMount } from 'svelte';
+  import { afterUpdate } from 'svelte';
   export let activities;
 	let chosenUser = 'm.ivanova';
   let chosenActivity;
 	let assignments = null;
 
-  onMount(async () => {
+  afterUpdate(async () => {
     let resp = await api.get(`/activities?assigned_to=${chosenUser}`);
     assignments = await resp.json();
   });
 
-		function assignStudent() {
-			assignments.push({id: chosenActivity.id, name: chosenActivity.name});
-			assignments = assignments;
-	}
+  async function assignStudent() {
+    let resp = await api.post(`/activities/${chosenActivity}/assigned`, {
+      data: {
+        student_email: chosenUser,
+      },
+    });
+
+    if (resp.ok) {
+      chosenActivity = null;
+    }
+  }
 </script>
 
 <div>
@@ -31,7 +38,7 @@
 				<p><select name="Activity" bind:value={chosenActivity}>
             <option disabled selected> – Choose  Sport Activity – </option>
             {#each activities as activity(activity.id)}
-            <option value={activity}>{activity.name}</option>
+            <option value={activity.id}>{activity.name}</option>
             {/each}
         </select></p>
         <div>

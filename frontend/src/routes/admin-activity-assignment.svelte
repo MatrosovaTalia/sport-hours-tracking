@@ -14,17 +14,31 @@
   export let activities;
 		let chosenUser;
 		let chosenActivity;
-	export let assignments;
+	  let assignedStudents = null;
 
-		function assignStudent() {
-			assignments.push({activity_id: chosenActivity, student_email: chosenUser});
-			assignments = assignments;
-	}
+  async function showAssignedStudents() {
+    let resp = await api.get(`/activities/${chosenActivity}/assigned`);
+    assignedStudents = await resp.json();
+  }
+
+  async function assignStudent() {
+    let resp = await api.post(`/activities/${chosenActivity}/assigned`, {
+      data: {
+        student_email: chosenUser,
+      },
+    });
+
+    if (resp.ok) {
+      showAssignedStudents();
+      chosenActivity = null;
+      chosenUser = null;
+    }
+  }
 </script>
 
 <div>
         <p id = "textp">Fill the form to assign student to sport activity:<p>
-				<p><select name="Activity" bind:value={chosenActivity}>
+				<p><select name="Activity" bind:value={chosenActivity} on:change={showAssignedStudents}>
             <option disabled selected>--Choose  Sport Activity--</option>
             {#each activities as activity(activity.id)}
             <option value={activity.id}>{activity.name}</option>
@@ -39,17 +53,17 @@
         <div>
             <input type="submit" value="Assign" on:click={assignStudent}>
         </div>
-	{#if assignments != null}
+	{#if assignedStudents != null}
     <table>
       <thead>
-        <th>Sport Activity</th>
-        <th>Student</th>
+        <th>Participant's Email</th>
+        <th>Participant's Full Name</th>
       </thead>
       <tbody>
-        {#each assignments as assignment (assignment.activity_id)}
+        {#each assignedStudents as student (student.email)}
           <tr>
-            <td>{assignment.activity_id}</td>
-						<td>{assignment.student_email}</td>
+            <td>{student.email}</td>
+						<td>{student.full_name}</td>
           </tr>
         {/each}
       </tbody>

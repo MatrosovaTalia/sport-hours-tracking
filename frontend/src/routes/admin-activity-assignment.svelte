@@ -17,7 +17,7 @@
 	export let assignments;
 
 		function assignStudent() {
-			assignments.push({activity_id: chosenActivity, student_id: chosenUser});
+			assignments.push({activity_id: chosenActivity, student_email: chosenUser});
 			assignments = assignments;
 	}
 </script>
@@ -32,8 +32,8 @@
         </select></p>
 				<p><select name="Student" bind:value={chosenUser}>
             <option disabled selected> – Choose Student – </option>
-            {#each users as user(user.id)}
-            <option value={user.id}>{user.full_name}</option>
+            {#each users as user(user.email)}
+            <option value={user.email}>{user.full_name}</option>
             {/each}
         </select></p>
         <div>
@@ -49,7 +49,7 @@
         {#each assignments as assignment (assignment.activity_id)}
           <tr>
             <td>{assignment.activity_id}</td>
-						<td>{assignment.student_id}</td>
+						<td>{assignment.student_email}</td>
           </tr>
         {/each}
       </tbody>

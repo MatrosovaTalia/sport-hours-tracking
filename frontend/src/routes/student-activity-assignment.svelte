@@ -11,7 +11,7 @@
   import * as api from '@/utils/api.js';
   import { onMount } from 'svelte';
   export let activities;
-	let chosenUser = 1;
+	let chosenUser = 'm.ivanova';
   let chosenActivity;
 	let assignments = null;
 

@@ -10,12 +10,24 @@
 <script>
   import * as api from '@/utils/api.js';
   export let users;
-  let choosenUser;
+  let chosenUser;
+
+    async function login() {
+      let resp = await api.post(`/login`, {
+        data: {
+          email: chosenUser,
+        },
+      });
+
+      if (resp.ok) {
+        chosenUser = null;
+      } 
+    }
 </script>
 
 <div>
         <p id = "textp">Choose user to enter the service:<p>
-        <p><select name="User" bind:value={choosenUser}>
+        <p><select name="User" bind:value={chosenUser}>
             <option disabled selected> – Choose User – </option>
             {#each users as user(user.email)}
             <option value={user.email}>{user.full_name}</option>
@@ -23,7 +35,8 @@
         </select></p>
         <div>
             <a href="/" rel="prefetch">
-            <input type="submit" value="Continue">
+            <input type="submit" value="Continue" on:click={login} disabled={!([chosenUser].every(x => !!x))}
+ >
             </a>
         </div>
 </div>

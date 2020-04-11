@@ -41,10 +41,9 @@ A record that indicates that a student is assigned to some sport activity.
 
 ### Activity Schedule
 
-- **ActivityID** ```Integer, Foreign Key``` [(SportActivity.ID)](#sport-activity)
-- **Day** ```String(3)``` (day of the week in 3-letter format (e.g. "mon"))
+- **ID** ```Integer, Primary Key```
+- **ActivityID** ```Integer, Foreign Key, Not Null``` [(SportActivity.ID)](#sport-activity)
+- **Day** ```Integer, Not Null``` (day of the week in range [0, 6], where 0 is Monday)
 - **StartTime** ```Time, Not Null```
 - **FinishTime** ```Time, Not Null```
 - **Location** ```String(64), Not Null``` (where the training is conducted)
-
-```Primary Key``` is the tuple (**ActivityID**, **Day**).

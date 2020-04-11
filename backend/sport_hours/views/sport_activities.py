@@ -5,7 +5,7 @@ from flask_login import login_required, current_user
 from sport_hours.extensions import db
 from sport_hours.blueprints import api
 from sport_hours.models import User, SportActivity, Club
-from sport_hours.schemas import SportActivitySchema, ClubSchema
+from sport_hours.schemas import SportActivitySchema, ClubSchema, UserSchema
 
 
 @api.route('/activities')

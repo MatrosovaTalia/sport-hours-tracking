@@ -14,8 +14,12 @@ class User(UserMixin, db.Model):
     full_name = db.Column(db.String(128), nullable=False)
     roles = db.Column(postgresql.ARRAY(db.String(32)), nullable=False)
     # property `activities` available with a backref
-
+    
 
     def get_id(self):
         """Return the user's e-mail."""
         return self.email
+    
+    
+    def is_admin(self):
+        return 'Admin' in self.roles

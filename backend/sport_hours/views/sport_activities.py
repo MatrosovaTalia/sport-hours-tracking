@@ -42,13 +42,18 @@ def get_activity_by_id(activity_id):
 
 
 class AssignedStudentsAPI(MethodView):
+    @login_required
     def get(self, activity_id):
         '''Get a list of students assigned to an activity.'''
         activity = SportActivity.query.get_or_404(activity_id)
         out_schema = UserSchema(many=True, exclude=('roles', 'activities'))
         return out_schema.jsonify(activity.assigned_students)
 
+    @login_required
     def post(self, activity_id):
+        if not current_user.is_admin():
+            abort(401)
+        
         '''Assign a given student to a sport activity.'''
         if not request.is_json:
             abort(400, 'The request must be in JSON.')
@@ -63,7 +68,11 @@ class AssignedStudentsAPI(MethodView):
         db.session.commit()
         return ('', 204)
 
+    @login_required
     def delete(self, activity_id):
+        if not current_user.is_admin():
+            abort(401)
+        
         '''Unassign a given student from a sport activity.'''
         if not request.is_json:
             abort(400, 'The request must be in JSON.')
@@ -92,8 +101,8 @@ api.add_url_rule('/activities/<int:activity_id>/assigned',
 @api.route('/activities/create', methods=['POST'])
 @login_required
 def create_sport_activity():
-    if not is_admin(current_user):
-        return ('', 401)
+    if not current_user.is_admin():
+        abort(401)
     
     in_schema = SportActivitySchema(exclude=('id',))
     activity_record = in_schema.load(request.json)
@@ -107,8 +116,8 @@ def create_sport_activity():
 @api.route('/activities/<int:activity_id>', methods=['PUT'])
 @login_required
 def modify_sport_activity(activity_id):
-    if not is_admin(current_user):
-        return ('', 401)
+    if not current_user.is_admin():
+        abort(401)
     
     in_schema = SportActivitySchema(exclude=('id',))
     record_in_db = SportActivity.query.get_or_404(activity_id)
@@ -123,8 +132,8 @@ def modify_sport_activity(activity_id):
 @api.route('/activities/<int:activity_id>', methods=['DELETE'])
 @login_required
 def delete_activity(activity_id):
-    if not is_admin(current_user):
-        return ('', 401)
+    if not current_user.is_admin():
+        abort(401)
     
     SportActivity.query.filter_by(id=activity_id).delete()
     db.session.commit()
@@ -135,8 +144,8 @@ def delete_activity(activity_id):
 @api.route('/activities/clubs/<int:club_id>', methods=['PUT'])
 @login_required
 def create_club(club_id):
-    if not is_admin(current_user):
-        return ('', 401)
+    if not current_user.is_admin():
+        abort(401)
     
     SportActivity.query.get_or_404(club_id)
 
@@ -159,8 +168,8 @@ def create_club(club_id):
 @api.route('/activities/clubs/<int:club_id>', methods=['DELETE'])
 @login_required
 def delete_club(club_id):
-    if not is_admin(current_user):
-        return ('', 401)
+    if not current_user.is_admin():
+        abort(401)
     
     Club.query.filter_by(id=club_id).delete()
     db.session.commit()

@@ -10,16 +10,19 @@
 <script>
   import * as api from '@/utils/api.js';
   export let users;
-  let chosenUser;
+  let chosenUser = null;
 
     async function login() {
-      let resp = await api.get(`/login?email=${chosenUser}`);
+        let resp = await api.get(`/login?email=${chosenUser}`);
 
-      if (resp.ok) {
-        chosenUser = null;
-      } 
+        if (resp.ok) {
+          chosenUser = null;
+        } 
     }
 </script>
+
+
+<a href="/" rel="prefetch">Go back</a>
 
 <div>
         <p id = "textp">Choose user to enter the service:<p>
@@ -31,8 +34,7 @@
         </select></p>
         <div>
             <a href="/" rel="prefetch">
-            <input type="submit" value="Continue" on:click={login} disabled={!([chosenUser].every(x => !!x))}
- >
+            <input type="submit" value="Continue" on:click={login} disabled={!([chosenUser].every(x => !!x))}>
             </a>
         </div>
 </div>
@@ -49,15 +51,11 @@
         background-color: rgb(222, 222, 222);
         padding: 8px 8px 8px 8px;
         font-family: Electrica, sans-serif;
-        border-width: 1.5px;
-        border-color: violet;
         border-radius: 10px;
     }
     input{
         padding: 8px 8px 8px 8px;
         font-family: Electrica, sans-serif;
-        border-width: 1.5px;
-        border-color: violet;
         border-radius: 10px;
     }
 </style>

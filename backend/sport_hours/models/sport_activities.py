@@ -23,6 +23,8 @@ class SportActivity(db.Model):
                                         lazy=True,
                                         backref=db.backref('activities', lazy=True))
 
+    schedule_records = db.relationship('ActivityScheduleRecord')
+
 
 class Club(db.Model):
     __tablename__ = 'clubs'
@@ -36,7 +38,7 @@ class ActivityScheduleRecord(db.Model):
     __tablename__ = 'activity_schedule'
 
     id = db.Column(db.Integer, primary_key=True)
-    activity = db.Column(db.Integer, db.ForeignKey('sport_activities.id'), nullable=False)
+    activity = db.Column(db.Integer, db.ForeignKey('sport_activities.id', ondelete='CASCADE'), nullable=False)
     day = db.Column(db.Integer, db.CheckConstraint('0 <= day and day <= 6'), nullable=False)
     start_time = db.Column(db.Time, nullable=False)
     finish_time = db.Column(db.Time, db.CheckConstraint('finish_time > start_time'), nullable=False)

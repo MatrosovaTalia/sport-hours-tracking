@@ -180,7 +180,6 @@ def delete_club(club_id):
 @api.route('/activities/<int:activity_id>/schedule')
 @login_required
 def get_schedule(activity_id):
-    SportActivity.query.get_or_404(activity_id)
+    activity = SportActivity.query.get_or_404(activity_id)
     out_schema = ActivityScheduleRecordSchema(many=True)
-    records = ActivityScheduleRecord.query.filter_by(activity=activity_id)
-    return out_schema.jsonify(records)
+    return out_schema.jsonify(activity.schedule_records)

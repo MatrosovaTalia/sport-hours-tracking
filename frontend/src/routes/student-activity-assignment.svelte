@@ -2,38 +2,32 @@
   import getInitialData from '@/utils/get-initial-data.js';
   export async function preload(page, session) {
     return await getInitialData(this, session, new Map([
-      ['activities', '/activities/all'],
+      ['activities', `/activities/all`],
+      ['assignments', `/activities?assigned_to=${chosenUser}`],
     ]));
   }
 </script>
 
 <script>
   import * as api from '@/utils/api.js';
-  import { afterUpdate } from 'svelte';
   export let activities;
+  export let assignments;
+  let currentUser=current_user;
 	let chosenUser = 'm.ivanova';
   let chosenActivity;
-	let assignments = null;
-
-  afterUpdate(async () => {
-    let resp = await api.get(`/activities?assigned_to=${chosenUser}`);
-    assignments = await resp.json();
-  });
 
   async function assignStudent() {
-    let resp = await api.post(`/activities/${chosenActivity}/assigned`, {
-      data: {
-        student_email: chosenUser,
-      },
-    });
-
+    let resp = await api.post(`/activities/${chosenActivity}/assigned`, {data: {student_email: chosenUser,},});
     if (resp.ok) {
       chosenActivity = null;
+      let resp = await api.get(`/activities?assigned_to=${chosenUser}`);
+      assignments = await resp.json();
     }
   }
 </script>
 
 <div>
+        <p>{currentUser}</p>
         <p id = "textp">Choose sport activity to assign yourself:<p>
 				<p><select name="Activity" bind:value={chosenActivity}>
             <option disabled selected> – Choose  Sport Activity – </option>

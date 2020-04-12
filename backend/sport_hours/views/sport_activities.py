@@ -4,8 +4,8 @@ from flask_login import login_required, current_user
 
 from sport_hours.extensions import db
 from sport_hours.blueprints import api
-from sport_hours.models import User, SportActivity, Club
-from sport_hours.schemas import SportActivitySchema, ClubSchema, UserSchema
+from sport_hours.models import User, SportActivity, Club, ActivityScheduleRecord
+from sport_hours.schemas import SportActivitySchema, ClubSchema, UserSchema, ActivityScheduleRecordSchema
 
 
 @api.route('/activities')
@@ -175,3 +175,12 @@ def delete_club(club_id):
     db.session.commit()
 
     return ('', 204)
+
+
+@api.route('/activities/<int:activity_id>/schedule')
+@login_required
+def get_schedule(activity_id):
+    SportActivity.query.get_or_404(activity_id)
+    out_schema = ActivityScheduleRecordSchema(many=True)
+    records = ActivityScheduleRecord.query.filter_by(activity=activity_id)
+    return out_schema.jsonify(records)

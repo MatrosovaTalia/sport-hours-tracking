@@ -15,7 +15,10 @@ class User(UserMixin, db.Model):
     roles = db.Column(postgresql.ARRAY(db.String(32)), nullable=False)
     # property `activities` available with a backref
 
-
     def get_id(self):
         """Return the user's e-mail."""
         return self.email
+    
+    @property
+    def is_admin(self):
+        return 'Admin' in self.roles

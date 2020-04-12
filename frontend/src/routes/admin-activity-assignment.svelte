@@ -39,7 +39,7 @@
 <div>
         <p id = "textp">Fill the form to assign student to sport activity:<p>
 				<p><select name="Activity" bind:value={chosenActivity} on:change={showAssignedStudents}>
-            <option disabled selected>--Choose  Sport Activity--</option>
+            <option disabled selected> – Choose  Sport Activity – </option>
             {#each activities as activity(activity.id)}
             <option value={activity.id}>{activity.name}</option>
             {/each}

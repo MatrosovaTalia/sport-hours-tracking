@@ -13,11 +13,7 @@
   let chosenUser;
 
     async function login() {
-      let resp = await api.put(`/login`, {
-        data: {
-          email: chosenUser,
-        },
-      });
+      let resp = await api.get(`/login?email=${chosenUser}`);
 
       if (resp.ok) {
         chosenUser = null;

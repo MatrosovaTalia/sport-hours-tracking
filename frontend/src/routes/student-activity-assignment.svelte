@@ -1,88 +1,88 @@
 <script context="module">
   import getInitialData from '@/utils/get-initial-data.js';
   export async function preload(page, session) {
-    return await getInitialData(this, session, new Map([
-      ['activities', `/activities/all`],
-      ['assignments', `/activities?assigned_to=${chosenUser}`],
+    const data = await getInitialData(this, session, new Map([
+      ['activities', '/activities/all'],
+      ['currentUser', '/user'],
     ]));
+    if (data.currentUser == null) {
+      this.error(403, 'Create a Project');      
+    }
+    return data;
   }
 </script>
 
 <script>
   import * as api from '@/utils/api.js';
+	import { onMount } from 'svelte';
   export let activities;
   export let assignments;
-  let currentUser=current_user;
-	let chosenUser = 'm.ivanova';
+  export let currentUser;
   let chosenActivity;
 
+  onMount( async () => {
+    let resp = await api.get(`/activities?assigned_to=${currentUser.email}`);
+    assignments = await resp.json();
+  })
+
   async function assignStudent() {
-    let resp = await api.post(`/activities/${chosenActivity}/assigned`, {data: {student_email: chosenUser,},});
+    let resp = await api.post(`/activities/${chosenActivity}/assigned`, {data: {student_email: currentUser.email,},});
     if (resp.ok) {
       chosenActivity = null;
-      let resp = await api.get(`/activities?assigned_to=${chosenUser}`);
+      let resp = await api.get(`/activities?assigned_to=${currentUser.email}`);
       assignments = await resp.json();
     }
   }
 </script>
 
-<div>
-        <p>{currentUser}</p>
-        <p id = "textp">Choose sport activity to assign yourself:<p>
-				<p><select name="Activity" bind:value={chosenActivity}>
-            <option disabled selected> – Choose  Sport Activity – </option>
-            {#each activities as activity(activity.id)}
-            <option value={activity.id}>{activity.name}</option>
-            {/each}
-        </select></p>
-        <div>
-            <input type="submit" value="Assign" on:click={assignStudent}>
-        </div>
-	{#if assignments != null}
-    <table>
-      <thead>
-        <th>Your Sport Activities</th>
-      </thead>
-      <tbody>
-        {#each assignments as assignment (assignment.id)}
-          <tr>
-            <td>{assignment.name}</td>
-          </tr>
-        {/each}
-      </tbody>
-    </table>
-  {/if}
-</div>
-
 <a href="/" rel="prefetch">Go back</a>
+<div>
+  <p id = "textp">Choose sport activity to assign yourself:</p>
+	<select name="Activity" bind:value={chosenActivity}>
+    <option disabled selected> – Choose  Sport Activity – </option>
+    {#each activities as activity(activity.id)}
+      <option value={activity.id}>{activity.name}</option>
+    {/each}
+  </select>
+</div>
+<button type="button" on:click={assignStudent} disabled={chosenActivity==null}>Assign</button>
+{#if assignments != null}
+  <table>
+    <thead>
+      <th>Your Sport Activities</th>
+    </thead>
+    <tbody>
+    {#each assignments as assignment (assignment.id)}
+      <tr>
+        <td>{assignment.name}</td>
+      </tr>
+    {/each}
+    </tbody>
+  </table>
+{/if}
 
 <style>
-    div{
+  div{
     font-family: Electrica, sans-serif;
-    }
+  }
 
-    #textp{
-        font-weight: bold;
-        font-size: 25px;
-    }
-    select{
-        background-color: rgb(222, 222, 222);
-        padding: 8px 8px 8px 8px;
-        font-family: Electrica, sans-serif;
-        border-width: 1.5px;
-        border-color: violet;
-        border-radius: 10px;
-    }
+  #textp{
+    font-weight: bold;
+    font-size: 25px;
+  }
+  select{
+    padding: 8px;
+    background-color: rgb(222, 222, 222);
+    border-radius: 10px;
+  }
 
-    input{
-        padding: 8px 8px 8px 8px;
-        font-family: Electrica, sans-serif;
-        border-width: 1.5px;
-        border-color: violet;
-        border-radius: 10px;
-    }
+  button{
+    padding: 8px;
+    font-family: Electrica, sans-serif;
+    border-radius: 10px;
+  }
 	table{
-		padding-top: 40px;
+    font-family: Electrica, sans-serif;
     font-size: 18px;
 	}
 	th{

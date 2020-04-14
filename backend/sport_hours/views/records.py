@@ -21,6 +21,7 @@ class SportHoursRecordAPI(MethodView):
         student = User.query.get_or_404(request.args.get('student_email'))
 
         records = (
+             # pylint: disable=bad-continuation
             SportHoursRecord.query
                 .filter_by(activity_id=activity.id, student_email=student.email)
                 .order_by(SportHoursRecord.date.desc())

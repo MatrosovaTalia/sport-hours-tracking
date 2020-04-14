@@ -21,4 +21,9 @@ class User(UserMixin, db.Model):
     
     @property
     def is_admin(self):
-        return 'Admin' in self.roles
+        return 'admin' in self.roles
+
+    @property
+    def is_trainer(self):
+        return 'trainer' in self.roles
+

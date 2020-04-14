@@ -6,7 +6,7 @@
       ['currentUser', '/user'],
     ]));
     if (data.currentUser == null) {
-      this.error(403, 'Create a Project');      
+      this.error(403, 'Log in, please');      
     }
     return data;
   }
@@ -14,7 +14,7 @@
 
 <script>
   import * as api from '@/utils/api.js';
-	import { onMount } from 'svelte';
+  import { onMount } from 'svelte';
   export let activities;
   export let assignments;
   export let currentUser;
@@ -38,7 +38,7 @@
 <a href="/" rel="prefetch">Go back</a>
 <div>
   <p id = "textp">Choose sport activity to assign yourself:</p>
-	<select name="Activity" bind:value={chosenActivity}>
+  <select name="Activity" bind:value={chosenActivity}>
     <option disabled selected> – Choose  Sport Activity – </option>
     {#each activities as activity(activity.id)}
       <option value={activity.id}>{activity.name}</option>
@@ -81,11 +81,11 @@
     font-family: Electrica, sans-serif;
     border-radius: 10px;
   }
-	table{
+  table{
     font-family: Electrica, sans-serif;
     font-size: 18px;
-	}
-	th{
-		color: darkviolet;
-	}
+  }
+  th{
+    color: darkviolet;
+  }
 </style>

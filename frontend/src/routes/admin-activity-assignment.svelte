@@ -1,10 +1,15 @@
 <script context="module">
   import getInitialData from '@/utils/get-initial-data.js';
   export async function preload(page, session) {
-    return await getInitialData(this, session, new Map([
+    const data = await getInitialData(this, session, new Map([
       ['users', '/users'],
-      ['activities', '/activities/all'],
+      ['activities', '/activities/all']
+      ['currentUser', '/user'],
     ]));
+    if (data.currentUser == null) {
+      this.error(403, 'Log in, please');      
+    }
+    return data;
   }
 </script>
 
@@ -12,9 +17,9 @@
   import * as api from '@/utils/api.js';
   export let users;
   export let activities;
-	let chosenUser = null;
-	let chosenActivity = null;
-	let assignedStudents = null;
+  let chosenUser = null;
+  let chosenActivity = null;
+  let assignedStudents = null;
 
   async function showAssignedStudents() {
     let resp = await api.get(`/activities/${chosenActivity}/assigned`);
@@ -34,13 +39,13 @@
 <a href="/" rel="prefetch">Go back</a>
 <div>
   <p id = "textp">Fill the form to assign student to sport activity:</p>
-	<select name="Activity" bind:value={chosenActivity} on:change={showAssignedStudents}>
+  <select name="Activity" bind:value={chosenActivity} on:change={showAssignedStudents}>
     <option disabled selected> – Choose  Sport Activity – </option>
     {#each activities as activity(activity.id)}
       <option value={activity.id}>{activity.name}</option>
     {/each}
   </select>
-	<select name="Student" bind:value={chosenUser}>
+  <select name="Student" bind:value={chosenUser}>
     <option disabled selected> – Choose Student – </option>
     {#each users as user(user.email)}
       <option value={user.email}>{user.full_name}</option>
@@ -85,11 +90,11 @@
     font-family: Electrica, sans-serif;
     border-radius: 10px;
   }
-	table{
+  table{
     font-family: Electrica, sans-serif;
     font-size: 18px;
-	}
-	th{
-		color: darkviolet;
-	}
+  }
+  th{
+    color: darkviolet;
+  }
 </style>

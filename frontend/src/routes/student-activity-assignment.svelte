@@ -6,7 +6,7 @@
       ['currentUser', '/user'],
     ]));
     if (data.currentUser == null) {
-      this.error(403, 'Log in, please');      
+      this.error(403, 'Log in, please');
     }
     return data;
   }

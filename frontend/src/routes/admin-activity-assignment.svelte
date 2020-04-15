@@ -3,23 +3,35 @@
   export async function preload(page, session) {
     const data = await getInitialData(this, session, new Map([
       ['users', '/users'],
-      ['activities', '/activities/all']
+      ['activities', '/activities/all'],
       ['currentUser', '/user'],
     ]));
     if (data.currentUser == null) {
       this.error(403, 'Log in, please');      
     }
+    if (data.is){}
     return data;
   }
 </script>
 
 <script>
   import * as api from '@/utils/api.js';
+  import { goto } from '@sapper/app';
+  import { onMount } from 'svelte';
   export let users;
   export let activities;
+  export let currentUser;
   let chosenUser = null;
   let chosenActivity = null;
   let assignedStudents = null;
+
+  onMount( async () => {
+    if (!currentUser.roles.includes("Admin"))
+    {
+      alert('Access only for Admins');
+      goto('/');
+    }
+  })
 
   async function showAssignedStudents() {
     let resp = await api.get(`/activities/${chosenActivity}/assigned`);

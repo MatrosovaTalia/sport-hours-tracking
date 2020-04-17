@@ -177,6 +177,4 @@ def delete_club(club_id):
     return ('', 204)
 
 
-@property
-def is_leader_of(self, activity_id):
-    return db.exists(Club.query.filter_by(id=activity_id, leader=self.email))
+

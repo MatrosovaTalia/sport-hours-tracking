@@ -31,5 +31,8 @@ class Club(db.Model):
     leader = db.Column(db.String(128), db.ForeignKey('users.email'), nullable=False)
     link = db.Column(db.String(256), nullable=True)
 
+    def is_leader_of(self, activity_id):
+        return db.exists(Club.query.filter_by(id=activity_id, leader=self.email))
+
 
 

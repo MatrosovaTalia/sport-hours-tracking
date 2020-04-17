@@ -5,8 +5,9 @@ from flask.views import MethodView
 
 from sport_hours.blueprints import api
 from sport_hours.extensions import db
-from sport_hours.models import SportActivity, SportHoursRecord, User
+from sport_hours.models import SportActivity, SportHoursRecord, User, Club
 from sport_hours.schemas import SportHoursRecordSchema
+
 
 
 

@@ -20,10 +20,17 @@
     } 
     goto('/');
   }
+
+  async function logout() {
+    let resp = await api.get(`/logout`);
+    if (resp.ok) {
+      goto('/');
+    }
+  }
 </script>
 
-<a href="/" rel="prefetch">Go back</a>
 
+<a href="/" rel="prefetch">Go back</a>
 <div>
   <p id="textp">Choose user to enter the service:<p>
   <select name="User" bind:value={chosenUser}>
@@ -33,6 +40,7 @@
     {/each}
   </select>
   <button type="button" on:click={login} disabled={chosenUser == null}>Continue</button>
+  <button type="button" on:click={logout}>Log out</button>
 </div>
 
 <style>

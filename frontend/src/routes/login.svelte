@@ -24,7 +24,7 @@
   async function logout() {
     let resp = await api.get(`/logout`);
     if (resp.ok) {
-      alert("You are logged out!");
+      goto('/');
     }
   }
 </script>
@@ -39,10 +39,8 @@
       <option value={user.email}>{user.full_name}</option>
     {/each}
   </select>
-  <div>
-    <button type="button" on:click={login} disabled={chosenUser == null}>Continue</button>
-    <button type="button" on:click={logout}>Log out</button>
-  </div>
+  <button type="button" on:click={login} disabled={chosenUser == null}>Continue</button>
+  <button type="button" on:click={logout}>Log out</button>
 </div>
 
 <style>

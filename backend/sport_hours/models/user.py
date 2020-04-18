@@ -22,4 +22,5 @@ class User(UserMixin, db.Model):
         return self.email
 
     def is_leader_of(self, activity_id):
-        return db.exists(SportActivity.query.filter_by(id=activity_id, leader=self.email))
+        activity = SportActivity.query.filter_by(id=activity_id, leader=self.email)
+        return db.session.query(activity.exists()).scalar()

@@ -14,7 +14,7 @@ class ActivityAPI(MethodView):
         '''Get a list of all activities.'''
         activities = SportActivity.query.all()
         out_schema = SportActivitySchema(many=True, exclude=('assigned_students',
-                                                             'leader', 'chat_link',
+                                                             'chat_link',
                                                              'schedule_records'))
         return out_schema.jsonify(activities)
 
@@ -47,7 +47,7 @@ def get_assigned_activities():
         student = current_user
 
     out_schema = SportActivitySchema(many=True, exclude=('assigned_students',
-                                                         'leader', 'chat_link',
+                                                         'chat_link',
                                                          'schedule_records'))
     return out_schema.jsonify(student.activities)
 

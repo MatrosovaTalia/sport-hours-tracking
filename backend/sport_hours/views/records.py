@@ -12,7 +12,7 @@ class SportHoursRecordAPI(MethodView):
     @login_required
     def get(self, activity_id):
         if not (current_user.is_admin or
-                current_user.email == request.args['email'] or
+                current_user.email == request.args['student_email'] or
                 current_user.is_leader_of(activity_id)):
             abort(403)
         activity = SportActivity.query.get_or_404(activity_id)

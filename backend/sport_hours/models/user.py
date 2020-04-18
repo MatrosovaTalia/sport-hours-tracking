@@ -2,6 +2,8 @@ from sport_hours.extensions import db, login_manager
 from sqlalchemy.dialects import postgresql
 from flask_login.mixins import UserMixin
 
+from sport_hours.models.sport_activities import Club
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(user_id)
@@ -26,4 +28,7 @@ class User(UserMixin, db.Model):
     @property
     def is_trainer(self):
         return 'trainer' in self.roles
+    
+    def is_leader_of(self, activity_id):
+        return db.exists(Club.query.filter_by(id=activity_id, leader=self.email))
 

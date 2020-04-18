@@ -1,4 +1,3 @@
-
 from sport_hours.extensions import db
 
 

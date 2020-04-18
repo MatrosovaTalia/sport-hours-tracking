@@ -1,4 +1,4 @@
-from flask_login import login_user, logout_user, login_required
+from flask_login import login_user, logout_user
 from flask import request, abort
 from sport_hours.blueprints import api
 from sport_hours.models import User
@@ -13,8 +13,8 @@ def login():
     login_user(user, remember=True)
     return '', 204
 
+
 @api.route('/logout')
 def logout():
     logout_user()
     return '', 204
-

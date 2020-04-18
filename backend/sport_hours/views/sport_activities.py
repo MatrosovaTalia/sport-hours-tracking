@@ -66,6 +66,7 @@ class AssignedStudentsAPI(MethodView):
 
         activity.assigned_students.append(student)
         db.session.commit()
+
         return ('', 204)
 
     @login_required

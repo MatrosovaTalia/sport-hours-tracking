@@ -5,8 +5,10 @@ from sport_hours.models import SportActivity, ActivityScheduleRecord
 class SportActivitySchema(ma.ModelSchema):
     class Meta:
         model = SportActivity
+        include_fk = True
         sqla_session = db.session
 
+    schedule_records = ma.Nested('ActivityScheduleRecordSchema', many=True)
 
 
 

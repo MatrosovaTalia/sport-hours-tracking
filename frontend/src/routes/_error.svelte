@@ -33,6 +33,7 @@
 
 <h1>{status}</h1>
 
+<a href="/">Go home</a>
 <p>{error.message}</p>
 
 {#if dev && error.stack}

@@ -7,7 +7,6 @@ from sport_hours.schemas import UserSchema
 
 
 @api.route('/users')
-@login_required
 def get_users():
 
     out_schema = UserSchema(many=True, exclude=('activities', 'roles'))

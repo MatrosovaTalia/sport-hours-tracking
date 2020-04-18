@@ -1,8 +1,7 @@
-from sport_hours.extensions import db, login_manager
-from sqlalchemy.dialects import postgresql
 from flask_login.mixins import UserMixin
 
 from sport_hours.models.sport_activities import Club
+from sport_hours.extensions import db, login_manager
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -10,7 +9,7 @@ def load_user(user_id):
 
 
 class User(UserMixin, db.Model):
-    __tablename__ = "users"
+    __tablename__ = 'users'
 
     email = db.Column(db.String(128), primary_key=True)
     full_name = db.Column(db.String(128), nullable=False)

@@ -18,8 +18,3 @@ def logout():
     logout_user()
     return '', 204
 
-@api.route('/testlogin')
-@login_required
-def test_login():
-    print(request.args)
-    return ''

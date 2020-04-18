@@ -52,7 +52,7 @@ class AssignedStudentsAPI(MethodView):
     @login_required
     def post(self, activity_id):
         if not current_user.is_admin:
-            abort(401)
+            abort(403)
         
         '''Assign a given student to a sport activity.'''
         if not request.is_json:
@@ -71,7 +71,7 @@ class AssignedStudentsAPI(MethodView):
     @login_required
     def delete(self, activity_id):
         if not current_user.is_admin:
-            abort(401)
+            abort(403)
         
         '''Unassign a given student from a sport activity.'''
         if not request.is_json:
@@ -102,7 +102,7 @@ api.add_url_rule('/activities/<int:activity_id>/assigned',
 @login_required
 def create_sport_activity():
     if not current_user.is_admin():
-        abort(401)
+        abort(403)
     
     in_schema = SportActivitySchema(exclude=('id',))
     activity_record = in_schema.load(request.json)
@@ -117,7 +117,7 @@ def create_sport_activity():
 @login_required
 def modify_sport_activity(activity_id):
     if not current_user.is_admin:
-        abort(401)
+        abort(403)
     
     in_schema = SportActivitySchema(exclude=('id',))
     record_in_db = SportActivity.query.get_or_404(activity_id)
@@ -133,7 +133,7 @@ def modify_sport_activity(activity_id):
 @login_required
 def delete_activity(activity_id):
     if not current_user.is_admin:
-        abort(401)
+        abort(403)
     
     SportActivity.query.filter_by(id=activity_id).delete()
     db.session.commit()
@@ -145,7 +145,7 @@ def delete_activity(activity_id):
 @login_required
 def create_club(club_id):
     if not current_user.is_admin:
-        abort(401)
+        abort(403)
     
     SportActivity.query.get_or_404(club_id)
 
@@ -169,7 +169,7 @@ def create_club(club_id):
 @login_required
 def delete_club(club_id):
     if not current_user.is_admin:
-        abort(401)
+        abort(403)
     
     Club.query.filter_by(id=club_id).delete()
     db.session.commit()

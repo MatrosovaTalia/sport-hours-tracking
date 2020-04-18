@@ -1,21 +1,28 @@
-from flask import request
+from flask import request, abort
+from flask_login import login_required, current_user
 from flask.views import MethodView
 
 
 from sport_hours.blueprints import api
 from sport_hours.extensions import db
-from sport_hours.models import SportActivity, SportHoursRecord, User
+from sport_hours.models import SportActivity, SportHoursRecord, User, Club
 from sport_hours.schemas import SportHoursRecordSchema
 
 
 
+
 class SportHoursRecordAPI(MethodView):
+    @login_required
     def get(self, activity_id):
+        if not (current_user.is_admin or current_user.is_trainer or
+                current_user.email == request.args['email'] or
+                current_user.is_leader_of(activity_id)):
+            abort(403)
         activity = SportActivity.query.get_or_404(activity_id)
         student = User.query.get_or_404(request.args.get('student_email'))
 
         records = (
-            # pylint: disable=bad-continuation
+             # pylint: disable=bad-continuation
             SportHoursRecord.query
                 .filter_by(activity_id=activity.id, student_email=student.email)
                 .order_by(SportHoursRecord.date.desc())
@@ -24,7 +31,12 @@ class SportHoursRecordAPI(MethodView):
 
         return out_schema.jsonify(records.all())
 
+    @login_required
     def post(self, activity_id):
+        if not (current_user.is_admin or current_user.is_trainer or 
+                current_user.is_leader_of(activity_id)):
+            abort(403)
+
         SportActivity.query.get_or_404(activity_id)
 
         in_schema = SportHoursRecordSchema(exclude=('id', 'activity_id'))

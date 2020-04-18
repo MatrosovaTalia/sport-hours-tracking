@@ -8,5 +8,5 @@
 	<a href="/student-activity-assignment" rel="prefetch">Choose sport activity</a>
 	<a href="/admin-activity-assignment" rel="prefetch">Assign student to sport activity</a>
 
-	<a href="/login" rel="prefetch">Choose user</a>
+	<a href="/log-in" rel="prefetch">Choose user</a>
 </div>

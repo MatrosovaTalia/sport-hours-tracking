@@ -17,20 +17,15 @@ class SportActivity(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128), nullable=False)
+    is_club = db.Column(db.Boolean, nullable=False, default=False)
+    leader = db.Column(db.String(128), db.ForeignKey('users.email'), nullable=False)
+    chat_link = db.Column(db.String(256), nullable=True)
     assigned_students = db.relationship('User',
                                         secondary=activity_assignment,
                                         lazy=True,
                                         backref=db.backref('activities', lazy=True))
 
     schedule_records = db.relationship('ActivityScheduleRecord')
-
-
-class Club(db.Model):
-    __tablename__ = 'clubs'
-
-    id = db.Column(db.Integer, db.ForeignKey('sport_activities.id'), primary_key=True)
-    leader = db.Column(db.String(128), db.ForeignKey('users.email'), nullable=False)
-    link = db.Column(db.String(256), nullable=True)
 
 
 class ActivityScheduleRecord(db.Model):

@@ -1,6 +1,5 @@
 from sport_hours.extensions import ma, db
-from sport_hours.models import SportActivity, Club, ActivityScheduleRecord
-from sport_hours.schemas import UserSchema
+from sport_hours.models import SportActivity, ActivityScheduleRecord
 
 
 class SportActivitySchema(ma.ModelSchema):
@@ -9,11 +8,6 @@ class SportActivitySchema(ma.ModelSchema):
         sqla_session = db.session
 
 
-class ClubSchema(ma.ModelSchema):
-    class Meta:
-        model = Club
-        sqla_session = db.session
-        include_fk = True
 
 
 class ActivityScheduleRecordSchema(ma.ModelSchema):

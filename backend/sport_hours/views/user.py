@@ -9,7 +9,7 @@ from sport_hours.schemas import UserSchema
 @api.route('/users')
 def get_users():
 
-    out_schema = UserSchema(many=True, exclude=('activities', 'roles'))
+    out_schema = UserSchema(many=True, exclude=('activities',))
     return out_schema.jsonify(User.query.all())
 
 

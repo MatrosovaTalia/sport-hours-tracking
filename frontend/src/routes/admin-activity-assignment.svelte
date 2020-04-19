@@ -21,7 +21,6 @@
   import * as api from '@/utils/api.js';
   export let users;
   export let activities;
-  export let currentUser;
   let chosenUser = null;
   let chosenActivity = null;
   let assignedStudents = null;

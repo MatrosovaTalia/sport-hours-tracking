@@ -16,17 +16,30 @@
   let chosenUser = null;
   let chosenActivity = null;
   let records = null;
+  let error = null;
 
   async function getActivities(evt) {
     chosenUser = evt.target.value;
-    let resp = await api.get(`/activities?assigned_to=${chosenUser}`);
-    activities = await resp.json();
+    try {
+      let resp = await api.get(`/activities/assigned?to=${chosenUser}`);
+      activities = await resp.json();
+      error = null;
+    } catch (e) {
+      error = 'Access denied :c';
+      console.error(e);
+    }
   }
 
   async function showRecords(evt) {
     chosenActivity = evt.target.value;
-    let resp = await api.get(`/activities/${chosenActivity}/attendance?student_email=${chosenUser}`);
-    records = await resp.json();
+    try {
+      let resp = await api.get(`/activities/${chosenActivity}/attendance?student_email=${chosenUser}`);
+      records = await resp.json();
+      error = null;
+    } catch (e) {
+      error = 'Access denied :c';
+      console.error(e);
+    }
   }
 </script>
 
@@ -69,3 +82,6 @@
     </table>
   {/if}
 </form>
+{#if error}
+  <p>{error}</p>
+{/if}

@@ -4,14 +4,14 @@
   export async function preload(page, session) {
     const data = await getInitialData(this, session, new Map([
       ['users', '/users'],
-      ['activities', '/activities/all'],
+      ['activities', '/activities'],
       ['currentUser', '/user'],
     ]));
     if (data.currentUser == null) {
-      this.error(403, 'Log in, please');      
+      this.error(403, 'Log in, please');
     }
-    else if (!data.currentUser.roles.includes("Admin")) {
-      this.error(403, 'Access denied');   
+    else if (!data.currentUser.is_admin) {
+      this.error(403, 'Access denied');
     }
     return data;
   }
@@ -21,17 +21,20 @@
   import * as api from '@/utils/api.js';
   export let users;
   export let activities;
+  export let currentUser;
   let chosenUser = null;
   let chosenActivity = null;
   let assignedStudents = null;
 
   async function showAssignedStudents() {
-    let resp = await api.get(`/activities/${chosenActivity}/assigned`);
-    assignedStudents = await resp.json();
+    let resp = await api.get(`/activities/${chosenActivity}`);
+    assignedStudents = await resp.json().assigned_students;
   }
 
   async function assignStudent() {
-    let resp = await api.post(`/activities/${chosenActivity}/assigned`, {data: {student_email: chosenUser,},});
+    let resp = await api.post(`/activities/${chosenActivity}/assigned`, {
+      data: {student_email: chosenUser,},
+    });
     if (resp.ok) {
       showAssignedStudents();
       chosenActivity = null;
@@ -44,7 +47,7 @@
 <div>
   <p id = "textp">Fill the form to assign student to sport activity:</p>
   <select name="Activity" bind:value={chosenActivity} on:change={showAssignedStudents}>
-    <option disabled selected> – Choose  Sport Activity – </option>
+    <option disabled selected> – Choose Sport Activity – </option>
     {#each activities as activity(activity.id)}
       <option value={activity.id}>{activity.name}</option>
     {/each}

@@ -32,6 +32,10 @@
 
   export let currentUser;
   export let activity;
+  let hours_semester = 15;
+  let hours_week = 3;
+  let hours_today = 1;
+  let hours_date = 2;
 
   let autosaved = false;
   let selectedDate = new Date();
@@ -80,6 +84,40 @@
     {/if}
   </header>
   <main>
+    {#if currentUser.email !== activity.leader}
+    <div class="heading" >
+      attendance
+    </div>
+    <div class="hours_stat">
+      <div class="hours_segment">
+        <p class="hours">{hours_semester} hours</p>
+        <p class="when">this semester</p>
+      </div>
+      <div class="hours_segment">
+        <p class="hours">{hours_week} hours</p>
+        <p class="when">this week</p>
+      </div>
+      <div class="hours_segment">
+        <p class="hours">{hours_today} hours</p>
+        <p class="when">today</p>
+      </div>
+      <div class="hours_segment">
+        <p class="hours">{hours_date} hours</p>
+        <p class="when">{formatDate(selectedDate)}</p>
+      </div>
+      <div class="datapicker">
+        <Dropdown bind:value={datePickerOpen} noclose>
+          <button slot="handle" class="btn handle" on:click={() => datePickerOpen = !datePickerOpen}>
+            <CalendarIcon size=24 class="icon mr" />
+            {formatDate(selectedDate)}
+            <ChevronDownIcon size=24 class="icon ml chevron" />
+          </button>
+          <DatePicker bind:value={selectedDate} on:change={() => { datePickerOpen = false; }} />
+        </Dropdown>
+      </div>
+    </div>
+    {/if}
+    <div class="gorizontal-box">
     <div class="schedule">
       <div class="heading">
         schedule
@@ -155,6 +193,7 @@
         </div>
       </div>
     {/if}
+    </div>
   </main>
 </div>
 
@@ -205,11 +244,15 @@
 
   main {
     display: flex;
+    flex-direction: column;
     padding: 2em 1em;
     width: 80%;
   }
 
-  .schedule,
+  .schedule
+  {
+    flex: 1;
+  }
   .attendance {
     flex: 1;
     margin-left: 1.5em;
@@ -302,5 +345,34 @@
 
   :global(.autosaved .icon) {
     stroke: #aaa;
+  }
+
+	.hours_stat{
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+    margin: 1.5em 0em;
+	}
+
+	.hours_segment{
+		padding: 0px 15px;
+		width: 170px;
+		text-align: center;
+		border-right: 1px solid lightgrey;
+	}
+	.hours{
+    font-weight: bold;
+		font-size: 28px;
+	}
+	.when{
+		font-size: 18px;
+	}
+  .gorizontal-box{
+    display: flex;
+    flex-direction: row;
+    
+  }
+  .datapicker{
+    margin-left: 1em;
   }
 </style>

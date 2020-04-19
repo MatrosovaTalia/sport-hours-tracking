@@ -118,41 +118,43 @@
         </table>
       </div>
     </div>
-    <div class="attendance">
-      <div class="heading">
-        attendance
-        {#if autosaved}
-          <span class="autosaved">
-            <CheckIcon size=16 class="icon" />
-            autosaved!
-          </span>
-        {/if}
+    {#if currentUser.email === activity.leader}
+      <div class="attendance">
+        <div class="heading">
+          attendance
+          {#if autosaved}
+            <span class="autosaved">
+              <CheckIcon size=16 class="icon" />
+              autosaved!
+            </span>
+          {/if}
+        </div>
+        <div class="actions">
+          <Dropdown bind:value={datePickerOpen} noclose>
+            <button slot="handle" class="btn handle" on:click={() => datePickerOpen = !datePickerOpen}>
+              <CalendarIcon size=24 class="icon mr" />
+              {formatDate(selectedDate)}
+              <ChevronDownIcon size=24 class="icon ml chevron" />
+            </button>
+            <DatePicker bind:value={selectedDate} on:change={() => { datePickerOpen = false; }} />
+          </Dropdown>
+        </div>
+        <div class="mark-area">
+          {#each activity.assigned_students as student (student.email)}
+            <div class="participant">
+              <div class="name">{student.full_name}</div>
+              <a href="mailto:{student.email}">{student.email}</a>
+              <TextField
+                type="number"
+                placeholder=0
+                min=0
+                on:change={({ detail: hours}) => submitHours(student.email, hours)}
+              />
+            </div>
+          {/each}
+        </div>
       </div>
-      <div class="actions">
-        <Dropdown bind:value={datePickerOpen} noclose>
-          <button slot="handle" class="btn handle" on:click={() => datePickerOpen = !datePickerOpen}>
-            <CalendarIcon size=24 class="icon mr" />
-            {formatDate(selectedDate)}
-            <ChevronDownIcon size=24 class="icon ml chevron" />
-          </button>
-          <DatePicker bind:value={selectedDate} on:change={() => { datePickerOpen = false; }} />
-        </Dropdown>
-      </div>
-      <div class="mark-area">
-        {#each activity.assigned_students as student (student.email)}
-          <div class="participant">
-            <div class="name">{student.full_name}</div>
-            <a href="mailto:{student.email}">{student.email}</a>
-            <TextField
-              type="number"
-              placeholder=0
-              min=0
-              on:change={({ detail: hours}) => submitHours(student.email, hours)}
-            />
-          </div>
-        {/each}
-      </div>
-    </div>
+    {/if}
   </main>
 </div>
 
@@ -213,7 +215,7 @@
     margin-left: 1.5em;
   }
 
-  .schedule {
+  .schedule:not(:last-child) {
     border-right: 1px solid #ddd;
   }
 

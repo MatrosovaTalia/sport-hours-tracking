@@ -2,8 +2,9 @@
   import getInitialData from '@/utils/get-initial-data.js';
   export async function preload(page, session) {
     const data = await getInitialData(this, session, new Map([
-      ['activities', '/activities/all'],
+      ['activities', '/activities'],
       ['currentUser', '/user'],
+      ['assignments', '/activities/assigned'],
     ]));
     if (data.currentUser == null) {
       this.error(403, 'Log in, please');
@@ -20,16 +21,13 @@
   export let currentUser;
   let chosenActivity;
 
-  onMount( async () => {
-    let resp = await api.get(`/activities?assigned_to=${currentUser.email}`);
-    assignments = await resp.json();
-  })
-
   async function assignStudent() {
-    let resp = await api.post(`/activities/${chosenActivity}/assigned`, {data: {student_email: currentUser.email,},});
+    let resp = await api.post(`/activities/${chosenActivity}/assigned`, {
+      data: {student_email: currentUser.email,},
+    });
     if (resp.ok) {
       chosenActivity = null;
-      let resp = await api.get(`/activities?assigned_to=${currentUser.email}`);
+      let resp = await api.get('/activities/assigned');
       assignments = await resp.json();
     }
   }

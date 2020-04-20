@@ -29,9 +29,15 @@
   import TextField from '@/components/text-field.svelte';
   import { formatDate } from '@/utils/date-time-format.js';
   import * as api from '@/utils/api.js';
+  import {onMount} from 'svelte';
 
   export let currentUser;
   export let activity;
+  let sportHours = null;
+  let hours_total = 0;
+  let hours_week = 0;
+  let hours_today = 0;
+  let hours_date = 0;
 
   let autosaved = false;
   let selectedDate = new Date();
@@ -46,6 +52,40 @@
     } else {
       scheduleByWeekday[record.day].push(record);
     }
+  }
+
+  onMount(async () => {
+    const resp = await api.get(`/activities/${activity.id}/attendance?student_email=${currentUser.email}`);
+    sportHours = await resp.json();
+    let currentDate = new Date();
+    sportHours.forEach(element => {
+      hours_total += element.hours_number;
+
+      let dateParts = element.date.split(/-/);
+      let elementDate = new Date(dateParts[0], dateParts[1]-1, dateParts[2]); //month count from 0
+      let ifSunday = ((currentDate.getDay()==0) ? -6 : 1);
+      let firstWeekDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate()-currentDate.getDay()+ifSunday);
+      if ((Math.round(elementDate - firstWeekDay)<=(currentDate.getDay()-ifSunday)*86400000) && (Math.round(elementDate - firstWeekDay)>=0)){ // date difference in ms
+        hours_week += element.hours_number;
+      }
+
+      if (formatDate(currentDate)==formatDate(element.date)) {
+        hours_today = element.hours_number;
+      }
+
+      if (formatDate(selectedDate)==formatDate(element.date)) {
+        hours_date = element.hours_number;
+      }
+    });
+  })
+
+  function showHours(){
+    hours_date = 0;
+    sportHours.forEach(element => {
+      if (formatDate(selectedDate)==formatDate(element.date)) {
+        hours_date += element.hours_number;
+      }
+    });
   }
 
   async function submitHours(email, hours) {
@@ -80,6 +120,40 @@
     {/if}
   </header>
   <main>
+    {#if currentUser.email !== activity.leader}
+    <div class="heading" >
+      attendance
+    </div>
+    <div class="hours_stat">
+      <div class="hours_segment">
+        <p class="hours">{hours_total} hours</p>
+        <p class="when">this semester</p>
+      </div>
+      <div class="hours_segment">
+        <p class="hours">{hours_week} hours</p>
+        <p class="when">this week</p>
+      </div>
+      <div class="hours_segment">
+        <p class="hours">{hours_today} hours</p>
+        <p class="when">today</p>
+      </div>
+      <div class="hours_segment">
+        <p class="hours">{hours_date} hours</p>
+        <p class="when">{formatDate(selectedDate)}</p>
+      </div>
+      <div class="datapicker">
+        <Dropdown bind:value={datePickerOpen} noclose>
+          <button slot="handle" class="btn handle" on:click={() => datePickerOpen = !datePickerOpen} style="font-size: 20px">
+            <CalendarIcon size=26 class="icon mr" />
+            {formatDate(selectedDate)}
+            <ChevronDownIcon size=26 class="icon ml chevron" />
+          </button>
+          <DatePicker bind:value={selectedDate} on:change={() => { datePickerOpen = false; showHours();}} />
+        </Dropdown>
+      </div>
+    </div>
+    {/if}
+    <div class="gorizontal-box">
     <div class="schedule">
       <div class="heading">
         schedule
@@ -155,6 +229,7 @@
         </div>
       </div>
     {/if}
+    </div>
   </main>
 </div>
 
@@ -205,11 +280,15 @@
 
   main {
     display: flex;
+    flex-direction: column;
     padding: 2em 1em;
     width: 80%;
   }
 
-  .schedule,
+  .schedule
+  {
+    flex: 1;
+  }
   .attendance {
     flex: 1;
     margin-left: 1.5em;
@@ -302,5 +381,38 @@
 
   :global(.autosaved .icon) {
     stroke: #aaa;
+  }
+
+  .hours_stat{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 1.5em 0em;
+  }
+
+  .hours_segment{
+    padding: 0px 15px;
+    width: 170px;
+    text-align: center;
+    border-right: 1px solid lightgrey;
+  }
+  .hours{
+    font-weight: bold;
+    font-size: 28px;
+    white-space: nowrap;
+  }
+  .when{
+    font-size: 18px;
+    white-space: nowrap;
+    margin-top: 0.5em;
+  }
+  .gorizontal-box{
+    display: flex;
+    flex-direction: row;
+    
+  }
+  .datapicker{
+    margin-left: 1em;
+    white-space: nowrap;
   }
 </style>

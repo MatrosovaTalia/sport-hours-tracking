@@ -21,16 +21,13 @@
   import * as api from '@/utils/api.js';
   export let users;
   export let activities;
-  export let currentUser;
   let chosenUser = null;
   let chosenActivity = null;
   let assignedStudents = null;
-
   async function showAssignedStudents() {
     let resp = await api.get(`/activities/${chosenActivity}`);
     assignedStudents = await resp.json().assigned_students;
   }
-
   async function assignStudent() {
     let resp = await api.post(`/activities/${chosenActivity}/assigned`, {
       data: {student_email: chosenUser,},
@@ -81,7 +78,6 @@
   div{
     font-family: Electrica, sans-serif;
   }
-
   #textp{
     font-weight: bold;
     font-size: 25px;
@@ -91,7 +87,6 @@
     background-color: rgb(222, 222, 222);
     border-radius: 10px;
   }
-
   button{
     padding: 8px;
     font-family: Electrica, sans-serif;

@@ -20,7 +20,6 @@
   export let assignments;
   export let currentUser;
   let chosenActivity;
-
   async function assignStudent() {
     let resp = await api.post(`/activities/${chosenActivity}/assigned`, {
       data: {student_email: currentUser.email,},
@@ -63,7 +62,6 @@
   div{
     font-family: Electrica, sans-serif;
   }
-
   #textp{
     font-weight: bold;
     font-size: 25px;
@@ -73,7 +71,6 @@
     background-color: rgb(222, 222, 222);
     border-radius: 10px;
   }
-
   button{
     padding: 8px;
     font-family: Electrica, sans-serif;

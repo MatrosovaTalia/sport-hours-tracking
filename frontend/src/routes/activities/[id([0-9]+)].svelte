@@ -57,24 +57,24 @@
   onMount(async () => {
     const resp = await api.get(`/activities/${activity.id}/attendance?student_email=${currentUser.email}`);
     sportHours = await resp.json();
-    let currentDate = new Date(2020, 3, 19);
+    let currentDate = new Date();
     sportHours.forEach(element => {
       hours_total += element.hours_number;
 
       let dateParts = element.date.split(/-/);
-	    let elementDate = new Date(dateParts[0], dateParts[1]-1, dateParts[2]); //month count from 0
+      let elementDate = new Date(dateParts[0], dateParts[1]-1, dateParts[2]); //month count from 0
       let ifSunday = ((currentDate.getDay()==0) ? -6 : 1);
-	    let firstWeekDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate()-currentDate.getDay()+ifSunday);
-      if ((Math.round(elementDate - firstWeekDay)<=(currentDate.getDay()-ifSunday)*86400000) && (Math.round(elementDate - firstWeekDay)>=0)){ // in ms
+      let firstWeekDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate()-currentDate.getDay()+ifSunday);
+      if ((Math.round(elementDate - firstWeekDay)<=(currentDate.getDay()-ifSunday)*86400000) && (Math.round(elementDate - firstWeekDay)>=0)){ // date difference in ms
         hours_week += element.hours_number;
       }
 
       if (formatDate(currentDate)==formatDate(element.date)) {
-        hours_today +=element.hours_number;
+        hours_today = element.hours_number;
       }
 
       if (formatDate(selectedDate)==formatDate(element.date)) {
-        hours_date +=element.hours_number;
+        hours_date = element.hours_number;
       }
     });
   })
@@ -383,26 +383,28 @@
     stroke: #aaa;
   }
 
-	.hours_stat{
-		display: flex;
-		flex-direction: row;
-		align-items: center;
+  .hours_stat{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
     margin: 1.5em 0em;
-	}
+  }
 
-	.hours_segment{
-		padding: 0px 15px;
-		width: 170px;
-		text-align: center;
-		border-right: 1px solid lightgrey;
-	}
-	.hours{
+  .hours_segment{
+    padding: 0px 15px;
+    width: 170px;
+    text-align: center;
+    border-right: 1px solid lightgrey;
+  }
+  .hours{
     font-weight: bold;
-		font-size: 28px;
-	}
-	.when{
-		font-size: 18px;
-	}
+    font-size: 28px;
+    white-space: nowrap;
+  }
+  .when{
+    font-size: 18px;
+    white-space: nowrap;
+  }
   .gorizontal-box{
     display: flex;
     flex-direction: row;
@@ -410,5 +412,6 @@
   }
   .datapicker{
     margin-left: 1em;
+    white-space: nowrap;
   }
 </style>

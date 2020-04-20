@@ -57,15 +57,22 @@
   onMount(async () => {
     const resp = await api.get(`/activities/${activity.id}/attendance?student_email=${currentUser.email}`);
     sportHours = await resp.json();
-    let currentDate = new Date();
+    let currentDate = new Date(2020, 3, 19);
     sportHours.forEach(element => {
       hours_total += element.hours_number;
-      if ((currentDate - element.date)<604800000){ //7 ddays in ms
+
+      let dateParts = element.date.split(/-/);
+	    let elementDate = new Date(dateParts[0], dateParts[1]-1, dateParts[2]); //month count from 0
+      let ifSunday = ((currentDate.getDay()==0) ? -6 : 1);
+	    let firstWeekDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate()-currentDate.getDay()+ifSunday);
+      if ((Math.round(elementDate - firstWeekDay)<=(currentDate.getDay()-ifSunday)*86400000) && (Math.round(elementDate - firstWeekDay)>=0)){ // in ms
         hours_week += element.hours_number;
       }
+
       if (formatDate(currentDate)==formatDate(element.date)) {
         hours_today +=element.hours_number;
       }
+
       if (formatDate(selectedDate)==formatDate(element.date)) {
         hours_date +=element.hours_number;
       }

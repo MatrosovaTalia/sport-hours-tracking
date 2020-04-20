@@ -143,10 +143,10 @@
       </div>
       <div class="datapicker">
         <Dropdown bind:value={datePickerOpen} noclose>
-          <button slot="handle" class="btn handle" on:click={() => datePickerOpen = !datePickerOpen}>
-            <CalendarIcon size=24 class="icon mr" />
+          <button slot="handle" class="btn handle" on:click={() => datePickerOpen = !datePickerOpen} style="font-size: 20px">
+            <CalendarIcon size=26 class="icon mr" />
             {formatDate(selectedDate)}
-            <ChevronDownIcon size=24 class="icon ml chevron" />
+            <ChevronDownIcon size=26 class="icon ml chevron" />
           </button>
           <DatePicker bind:value={selectedDate} on:change={() => { datePickerOpen = false; showHours();}} />
         </Dropdown>
@@ -404,6 +404,7 @@
   .when{
     font-size: 18px;
     white-space: nowrap;
+    margin-top: 0.5em;
   }
   .gorizontal-box{
     display: flex;

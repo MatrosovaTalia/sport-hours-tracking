@@ -29,13 +29,15 @@
   import TextField from '@/components/text-field.svelte';
   import { formatDate } from '@/utils/date-time-format.js';
   import * as api from '@/utils/api.js';
+  import {onMount} from 'svelte';
 
   export let currentUser;
   export let activity;
-  let hours_semester = 15;
-  let hours_week = 3;
-  let hours_today = 1;
-  let hours_date = 2;
+  let sportHours = null;
+  let hours_total = 0;
+  let hours_week = 0;
+  let hours_today = 0;
+  let hours_date = 0;
 
   let autosaved = false;
   let selectedDate = new Date();
@@ -50,6 +52,33 @@
     } else {
       scheduleByWeekday[record.day].push(record);
     }
+  }
+
+  onMount(async () => {
+    const resp = await api.get(`/activities/${activity.id}/attendance?student_email=${currentUser.email}`);
+    sportHours = await resp.json();
+    let currentDate = new Date();
+    sportHours.forEach(element => {
+      hours_total += element.hours_number;
+      if ((currentDate - element.date)<604800000){ //7 ddays in ms
+        hours_week += element.hours_number;
+      }
+      if (formatDate(currentDate)==formatDate(element.date)) {
+        hours_today +=element.hours_number;
+      }
+      if (formatDate(selectedDate)==formatDate(element.date)) {
+        hours_date +=element.hours_number;
+      }
+    });
+  })
+
+  function showHours(){
+    hours_date = 0;
+    sportHours.forEach(element => {
+      if (formatDate(selectedDate)==formatDate(element.date)) {
+        hours_date += element.hours_number;
+      }
+    });
   }
 
   async function submitHours(email, hours) {
@@ -90,7 +119,7 @@
     </div>
     <div class="hours_stat">
       <div class="hours_segment">
-        <p class="hours">{hours_semester} hours</p>
+        <p class="hours">{hours_total} hours</p>
         <p class="when">this semester</p>
       </div>
       <div class="hours_segment">
@@ -112,7 +141,7 @@
             {formatDate(selectedDate)}
             <ChevronDownIcon size=24 class="icon ml chevron" />
           </button>
-          <DatePicker bind:value={selectedDate} on:change={() => { datePickerOpen = false; }} />
+          <DatePicker bind:value={selectedDate} on:change={() => { datePickerOpen = false; showHours();}} />
         </Dropdown>
       </div>
     </div>

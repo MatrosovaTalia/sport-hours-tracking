@@ -74,7 +74,7 @@ class ActivityDetailAPI(MethodView):
         in_schema = SportActivitySchema(exclude=('id',))
         record_in_db = SportActivity.query.get_or_404(activity_id)
 
-        for schedule_record in ActivityScheduleRecord.query.filter_by(activity=activity_id):
+        for schedule_record in record_in_db.schedule_records:
             db.session.delete(schedule_record)
 
         in_schema.load(request.json, session=db.session, instance=record_in_db, partial=True)

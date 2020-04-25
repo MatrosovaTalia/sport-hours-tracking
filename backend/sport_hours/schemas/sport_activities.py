@@ -8,7 +8,7 @@ class SportActivitySchema(ma.ModelSchema):
         include_fk = True
         sqla_session = db.session
 
-    schedule_records = ma.Nested('ActivityScheduleRecordSchema', many=True)
+    schedule_records = ma.Nested('ActivityScheduleRecordSchema', many=True, exclude=('activity',))
     assigned_students = ma.Nested('UserSchema', many=True, exclude=('activities',))
 
 

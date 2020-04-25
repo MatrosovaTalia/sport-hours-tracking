@@ -4,7 +4,7 @@ from flask_login import login_required, current_user
 
 from sport_hours.extensions import db
 from sport_hours.blueprints import api
-from sport_hours.models import User, SportActivity
+from sport_hours.models import User, SportActivity, ActivityScheduleRecord
 from sport_hours.schemas import SportActivitySchema
 
 
@@ -74,7 +74,11 @@ class ActivityDetailAPI(MethodView):
         in_schema = SportActivitySchema(exclude=('id',))
         record_in_db = SportActivity.query.get_or_404(activity_id)
 
+        for schedule_record in ActivityScheduleRecord.query.filter_by(activity=activity_id):
+            db.session.delete(schedule_record)
+
         in_schema.load(request.json, session=db.session, instance=record_in_db, partial=True)
+
         db.session.commit()
 
         return ('', 204)

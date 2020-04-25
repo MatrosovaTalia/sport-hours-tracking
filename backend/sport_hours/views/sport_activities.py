@@ -78,7 +78,6 @@ class ActivityDetailAPI(MethodView):
             db.session.delete(schedule_record)
 
         in_schema.load(request.json, session=db.session, instance=record_in_db, partial=True)
-
         db.session.commit()
 
         return ('', 204)

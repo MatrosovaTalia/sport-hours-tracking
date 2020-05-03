@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import request, abort
 from flask.views import MethodView
 from flask_login import login_required, current_user
@@ -58,3 +60,28 @@ record_api = SportHoursRecordAPI.as_view('sport_hours_record_api')
 api.add_url_rule('/activities/<int:activity_id>/attendance',
                  view_func=record_api,
                  methods=('GET', 'POST'))
+
+
+@api.route('/activities/<int:activity_id>/attendance-per-day')  # ?date=
+@login_required
+def get_attendance_per_day(activity_id):
+    if not (current_user.is_admin or
+            current_user.is_leader_of(activity_id)):
+        abort(403)
+
+    try:
+        print(request.args.get('date'))
+        date = datetime.fromisoformat(request.args.get('date'))
+    except:
+        abort(400, 'Invalid date.')
+
+    activity = SportActivity.query.get_or_404(activity_id)
+
+    records = (
+        # pylint: disable=bad-continuation
+        SportHoursRecord.query
+            .filter_by(activity_id=activity.id, date=date)
+    )
+    out_schema = SportHoursRecordSchema(many=True)
+
+    return out_schema.jsonify(records.all())

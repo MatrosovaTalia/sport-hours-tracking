@@ -4,7 +4,7 @@ from flask_login import login_required, current_user
 
 from sport_hours.extensions import db
 from sport_hours.blueprints import api
-from sport_hours.models import User, SportActivity, ActivityScheduleRecord
+from sport_hours.models import User, SportActivity, ActivityScheduleRecord, activity_assignment
 from sport_hours.schemas import SportActivitySchema
 
 
@@ -115,6 +115,9 @@ class AssignedStudentsAPI(MethodView):
         student = User.query.get_or_404(request.json['student_email'])
         activity = SportActivity.query.get_or_404(activity_id)
 
+        if len(activity.assigned_students) >= activity.max_students:
+            abort(400, 'Cannot assign any more students here.')
+
         activity.assigned_students.append(student)
         db.session.commit()
 
@@ -148,3 +151,37 @@ asn_students_api = AssignedStudentsAPI.as_view('assigned_students_api')
 api.add_url_rule('/activities/<int:activity_id>/assigned',
                  view_func=asn_students_api,
                  methods=('POST', 'DELETE'))
+
+
+@api.route('/assign-randomly', methods=['POST'])
+@login_required
+def assign_randomly():
+    '''Assign a given student to a random sport activity.'''
+    if not request.is_json:
+        abort(400, 'The request must be in JSON.')
+
+    if not isinstance(request.json.get('student_email'), str):
+        abort(400, 'A valid student_email must be passed.')
+
+    if not current_user.is_admin:
+        abort(403)
+
+    student = User.query.get_or_404(request.json['student_email'])
+    if len(student.activities) != 0:
+        return '', 204
+
+    student_count = db.func.count(activity_assignment.c.student_email)
+    first_available = (
+        # pylint: disable=bad-continuation
+        SportActivity.query
+            .outerjoin(activity_assignment)
+            .group_by(SportActivity.id)
+            .having(
+                (SportActivity.max_students.is_(None))
+                | (SportActivity.max_students > student_count)
+            )
+    ).first()
+    first_available.assigned_students.append(student)
+    db.session.commit()
+
+    return ('', 204)

@@ -20,6 +20,7 @@ class SportActivity(db.Model):
     is_club = db.Column(db.Boolean, nullable=False, default=False)
     leader = db.Column(db.String(128), db.ForeignKey('users.email'), nullable=False)
     chat_link = db.Column(db.String(256), nullable=True)
+    max_students = db.Column(db.Integer, nullable=True)
     assigned_students = db.relationship('User',
                                         secondary=activity_assignment,
                                         lazy=True,

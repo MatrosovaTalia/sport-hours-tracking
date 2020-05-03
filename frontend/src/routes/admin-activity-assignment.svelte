@@ -1,102 +1,152 @@
 <script context="module">
   import getInitialData from '@/utils/get-initial-data.js';
-  import { goto } from '@sapper/app';
+
   export async function preload(page, session) {
-    const data = await getInitialData(this, session, new Map([
-      ['users', '/users'],
-      ['activities', '/activities'],
+    const { unassignedStudents, currentUser } = await getInitialData(this, session, new Map([
+      ['unassignedStudents', '/users/unassigned'],
       ['currentUser', '/user'],
     ]));
-    if (data.currentUser == null) {
+    if (currentUser == null) {
       this.error(403, 'Log in, please');
     }
-    else if (!data.currentUser.is_admin) {
+    else if (!currentUser.is_admin) {
       this.error(403, 'Access denied');
     }
-    return data;
+    return { unassignedStudents };
   }
 </script>
 
 <script>
+  import {
+    ArrowLeftIcon,
+    CheckSquareIcon,
+  } from 'svelte-feather-icons';
+  import Button from '@/components/button.svelte';
+  import Card from '@/components/card.svelte';
+  // import DatePicker from '@/components/date-picker.svelte';
+  // import Dropdown from '@/components/dropdown.svelte';
+  // import TextField from '@/components/text-field.svelte';
   import * as api from '@/utils/api.js';
-  export let users;
-  export let activities;
-  let chosenUser = null;
-  let chosenActivity = null;
-  let assignedStudents = null;
-  async function showAssignedStudents() {
-    let resp = await api.get(`/activities/${chosenActivity}`);
-    assignedStudents = await resp.json().assigned_students;
-  }
-  async function assignStudent() {
-    let resp = await api.post(`/activities/${chosenActivity}/assigned`, {
-      data: {student_email: chosenUser,},
+
+  export let unassignedStudents;
+
+  async function assignRandomly(email) {
+    const resp = await api.post(`/assign-randomly`, {
+      data: { student_email: email },
     });
+
     if (resp.ok) {
-      showAssignedStudents();
-      chosenActivity = null;
-      chosenUser = null;
+      unassignedStudents = unassignedStudents.filter(student => student.email !== email);
+    }
+  }
+
+  async function assignEveryone() {
+    length = unassignedStudents.length;
+    for (let i = 0; i < length; ++i) {
+      await assignRandomly(unassignedStudents[0].email);
     }
   }
 </script>
 
-<a href="/" rel="prefetch">Go back</a>
-<div>
-  <p id = "textp">Fill the form to assign student to sport activity:</p>
-  <select name="Activity" bind:value={chosenActivity} on:change={showAssignedStudents}>
-    <option disabled selected> – Choose Sport Activity – </option>
-    {#each activities as activity(activity.id)}
-      <option value={activity.id}>{activity.name}</option>
-    {/each}
-  </select>
-  <select name="Student" bind:value={chosenUser}>
-    <option disabled selected> – Choose Student – </option>
-    {#each users as user(user.email)}
-      <option value={user.email}>{user.full_name}</option>
-    {/each}
-  </select>
+<div class="page">
+  <header>
+    <Button isRound href="/">
+      <ArrowLeftIcon size=24 class="icon" />
+    </Button>
+    <div class="title">
+      Unassigned students
+    </div>
+    {#if unassignedStudents.length !== 0}
+      <Button isFilled on:click={assignEveryone}>
+        assign everyone randomly
+      </Button>
+    {/if}
+  </header>
+  {#if unassignedStudents.length !== 0}
+    <div class="student-grid">
+      {#each unassignedStudents as student (student.email)}
+        <Card>
+          {student.full_name}
+          <Button on:click={() => assignRandomly(student.email)}>
+            assign randomly
+          </Button>
+        </Card>
+      {/each}
+    </div>
+  {:else}
+    <div class="empty">
+      <div class="icon">
+        <CheckSquareIcon size=48 />
+      </div>
+      <strong>Everyone is assigned!</strong>
+      <p>Hooray!</p>
+    </div>
+  {/if}
 </div>
-<button type="button" on:click={assignStudent} disabled={(chosenUser == null)|(chosenActivity == null)}>Assign</button>
-{#if assignedStudents != null}
-  <table>
-    <thead>
-      <th>Participant's Email</th>
-      <th>Participant's Full Name</th>
-    </thead>
-    <tbody>
-    {#each assignedStudents as student (student.email)}
-      <tr>
-        <td>{student.email}</td>
-  	    <td>{student.full_name}</td>
-      </tr>
-    {/each}
-    </tbody>
-  </table>
-{/if}
 
 <style>
-  div{
-    font-family: Electrica, sans-serif;
+  :global(body) {
+    max-width: unset;
   }
-  #textp{
-    font-weight: bold;
-    font-size: 25px;
+
+  :global(svg) {
+    stroke: #220ca4;
   }
-  select{
-    padding: 8px;
-    background-color: rgb(222, 222, 222);
-    border-radius: 10px;
+
+  .page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: Ubuntu, sans-serif;
   }
-  button{
-    padding: 8px;
-    font-family: Electrica, sans-serif;
-    border-radius: 10px;
+
+  header {
+    width: 80%;
+    padding: 1em 2em;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    align-items: center;
   }
-  table{
-    font-family: Electrica, sans-serif;
-    font-size: 18px;
+
+  .title {
+    margin-left: 1em;
+    font-size: 1.5em;
+    font-weight: 500;
+    flex: 1;
   }
-  th{
-    color: darkviolet;
+
+  .student-grid {
+    width: 80%;
+    margin-top: 2em;
+    display: grid;
+    justify-items: start;
+  }
+
+  .student-grid :global(.btn) {
+    margin: .5em 0 0 0;
+  }
+
+  .empty {
+    margin-top: 6em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .empty strong {
+    font-size: 1.2em;
+    margin-top: .3em;
+    margin-bottom: .2em;
+  }
+
+  .empty :global(.icon) {
+    display: flex;
+    width: 8em;
+    height: 8em;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #e9e7f6;
   }
 </style>

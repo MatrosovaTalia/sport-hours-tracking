@@ -34,6 +34,7 @@
   export let currentUser;
   export let activity;
   let sportHours = null;
+  let hoursPerDay = null;
   let hours_total = 0;
   let hours_week = 0;
   let hours_today = 0;
@@ -54,30 +55,51 @@
     }
   }
 
+  /* Replaces the "Z" timezone modifier for an explicit +00:00 */
+  function isoForURL(date) {
+    date.setHours(date.getHours() + 3);
+    return date.toISOString().slice(0, 10);
+  }
+
   onMount(async () => {
-    const resp = await api.get(`/activities/${activity.id}/attendance?student_email=${currentUser.email}`);
-    sportHours = await resp.json();
-    let currentDate = new Date();
-    sportHours.forEach(element => {
-      hours_total += element.hours_number;
+    if (currentUser.email !== activity.leader) {
+      const resp = await api.get(`/activities/${activity.id}/attendance?student_email=${currentUser.email}`);
+      sportHours = await resp.json();
+      let currentDate = new Date();
+      sportHours.forEach(element => {
+        hours_total += element.hours_number;
 
-      let dateParts = element.date.split(/-/);
-      let elementDate = new Date(dateParts[0], dateParts[1]-1, dateParts[2]); //month count from 0
-      let ifSunday = ((currentDate.getDay()==0) ? -6 : 1);
-      let firstWeekDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate()-currentDate.getDay()+ifSunday);
-      if ((Math.round(elementDate - firstWeekDay)<=(currentDate.getDay()-ifSunday)*86400000) && (Math.round(elementDate - firstWeekDay)>=0)){ // date difference in ms
-        hours_week += element.hours_number;
-      }
+        let dateParts = element.date.split(/-/);
+        let elementDate = new Date(dateParts[0], dateParts[1]-1, dateParts[2]); //month count from 0
+        let ifSunday = ((currentDate.getDay()==0) ? -6 : 1);
+        let firstWeekDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate()-currentDate.getDay()+ifSunday);
+        if ((Math.round(elementDate - firstWeekDay)<=(currentDate.getDay()-ifSunday)*86400000) && (Math.round(elementDate - firstWeekDay)>=0)){ // date difference in ms
+          hours_week += element.hours_number;
+        }
 
-      if (formatDate(currentDate)==formatDate(element.date)) {
-        hours_today = element.hours_number;
-      }
+        if (formatDate(currentDate)==formatDate(element.date)) {
+          hours_today = element.hours_number;
+        }
 
-      if (formatDate(selectedDate)==formatDate(element.date)) {
-        hours_date = element.hours_number;
-      }
-    });
+        if (formatDate(selectedDate)==formatDate(element.date)) {
+          hours_date = element.hours_number;
+        }
+      });
+    }
   })
+
+  $: getHoursForDay(selectedDate);
+
+  async function getHoursForDay(date) {
+    const resp = await api.get(
+      `/activities/${activity.id}/attendance-per-day?date=${isoForURL(date)}`
+    );
+    const jsonResp = await resp.json();
+    hoursPerDay = new Map();
+    for (let obj of jsonResp) {
+      hoursPerDay.set(obj.student_email, obj.hours_number);
+    }
+  }
 
   function showHours(){
     hours_date = 0;
@@ -89,7 +111,10 @@
   }
 
   async function submitHours(email, hours) {
-    console.log(selectedDate.toISOString().slice(0, 10));
+    if (hours > 3) {
+      return;
+    }
+
     const resp = await api.post(`/activities/${activity.id}/attendance`, {
       data: {
         student_email: email,
@@ -119,77 +144,78 @@
       </Button>
     {/if}
   </header>
-  <main>
+  <main class:student={currentUser.email !== activity.leader}>
     {#if currentUser.email !== activity.leader}
-    <div class="heading" >
-      attendance
-    </div>
-    <div class="hours_stat">
-      <div class="hours_segment">
-        <p class="hours">{hours_total} hours</p>
-        <p class="when">this semester</p>
+      <div class="heading" >
+        attendance
       </div>
-      <div class="hours_segment">
-        <p class="hours">{hours_week} hours</p>
-        <p class="when">this week</p>
+      <div class="hours_stat">
+        <div class="hours_segment">
+          <p class="hours">{hours_total} hours</p>
+          <p class="when">this semester</p>
+        </div>
+        <div class="hours_segment">
+          <p class="hours">{hours_week} hours</p>
+          <p class="when">this week</p>
+        </div>
+        <div class="hours_segment">
+          <p class="hours">{hours_today} hours</p>
+          <p class="when">today</p>
+        </div>
+        <div class="hours_segment">
+          <p class="hours">{hours_date} hours</p>
+          <p class="when">{formatDate(selectedDate)}</p>
+        </div>
+        <div class="datapicker">
+          <Dropdown bind:value={datePickerOpen} noclose>
+            <button slot="handle" class="btn handle" on:click={() => datePickerOpen = !datePickerOpen} style="font-size: 20px">
+              <CalendarIcon size=26 class="icon mr" />
+              {formatDate(selectedDate)}
+              <ChevronDownIcon size=26 class="icon ml chevron" />
+            </button>
+            <DatePicker bind:value={selectedDate} on:change={() => { datePickerOpen = false; showHours();}} />
+          </Dropdown>
+        </div>
       </div>
-      <div class="hours_segment">
-        <p class="hours">{hours_today} hours</p>
-        <p class="when">today</p>
-      </div>
-      <div class="hours_segment">
-        <p class="hours">{hours_date} hours</p>
-        <p class="when">{formatDate(selectedDate)}</p>
-      </div>
-      <div class="datapicker">
-        <Dropdown bind:value={datePickerOpen} noclose>
-          <button slot="handle" class="btn handle" on:click={() => datePickerOpen = !datePickerOpen} style="font-size: 20px">
-            <CalendarIcon size=26 class="icon mr" />
-            {formatDate(selectedDate)}
-            <ChevronDownIcon size=26 class="icon ml chevron" />
-          </button>
-          <DatePicker bind:value={selectedDate} on:change={() => { datePickerOpen = false; showHours();}} />
-        </Dropdown>
-      </div>
-    </div>
     {/if}
     <div class="gorizontal-box">
-    <div class="schedule">
-      <div class="heading">
-        schedule
-      </div>
-      <div class="table-wrapper">
-        <table>
-          {#if activity.schedule_records.length !== 0}
-            <thead>
-              {#each scheduleByWeekday as weekday, i}
-                {#if weekday != null}
-                  <th>{weekdays[i]}</th>
-                {/if}
-              {/each}
-            </thead>
-            <tbody>
-              {#each scheduleByWeekday as weekday, i}
-                {#if weekday != null}
-                  <td>
-                    {#each weekday as record}
-                      <div class="record">
-                        <time>
-                          {record.start_time.slice(0, 5)} – {record.finish_time.slice(0, 5)}
-                        </time>
-                        <div class="location">
-                          {record.location}
+      <div class="schedule">
+        <div class="heading">
+          schedule
+        </div>
+        <div class="table-wrapper">
+          <table>
+            {#if activity.schedule_records.length !== 0}
+              <thead>
+                {#each scheduleByWeekday as weekday, i}
+                  {#if weekday != null}
+                    <th>{weekdays[i]}</th>
+                  {/if}
+                {/each}
+              </thead>
+              <tbody>
+                {#each scheduleByWeekday as weekday, i}
+                  {#if weekday != null}
+                    <td>
+                      {#each weekday as record}
+                        <div class="record">
+                          <time>
+                            {record.start_time.slice(0, 5)} – {record.finish_time.slice(0, 5)}
+                          </time>
+                          <div class="location">
+                            {record.location}
+                          </div>
                         </div>
-                      </div>
-                    {/each}
-                  </td>
-                {/if}
-              {/each}
-            </tbody>
-          {:else}
-            No information.
-          {/if}
-        </table>
+                      {/each}
+                    </td>
+                  {/if}
+                {/each}
+              </tbody>
+            {:else}
+              No information.
+            {/if}
+          </table>
+        </div>
       </div>
     </div>
     {#if currentUser.email === activity.leader}
@@ -222,6 +248,8 @@
                 type="number"
                 placeholder=0
                 min=0
+                max=3
+                value={hoursPerDay != null && hoursPerDay.get(student.email) || null}
                 on:change={({ detail: hours}) => submitHours(student.email, hours)}
               />
             </div>
@@ -229,7 +257,6 @@
         </div>
       </div>
     {/if}
-    </div>
   </main>
 </div>
 
@@ -280,15 +307,18 @@
 
   main {
     display: flex;
-    flex-direction: column;
     padding: 2em 1em;
     width: 80%;
   }
 
-  .schedule
-  {
+  main.student {
+    flex-direction: column;
+  }
+
+  .schedule {
     flex: 1;
   }
+
   .attendance {
     flex: 1;
     margin-left: 1.5em;
@@ -383,35 +413,35 @@
     stroke: #aaa;
   }
 
-  .hours_stat{
+  .hours_stat {
     display: flex;
     flex-direction: row;
     align-items: center;
     margin: 1.5em 0em;
   }
 
-  .hours_segment{
+  .hours_segment {
     padding: 0px 15px;
     width: 170px;
     text-align: center;
     border-right: 1px solid lightgrey;
   }
-  .hours{
+  .hours {
     font-weight: bold;
     font-size: 28px;
     white-space: nowrap;
   }
-  .when{
+  .when {
     font-size: 18px;
     white-space: nowrap;
     margin-top: 0.5em;
   }
-  .gorizontal-box{
+  .gorizontal-box {
     display: flex;
     flex-direction: row;
-    
   }
-  .datapicker{
+
+  .datapicker {
     margin-left: 1em;
     white-space: nowrap;
   }

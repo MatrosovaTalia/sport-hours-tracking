@@ -1,4 +1,5 @@
 <script>
+  import { ChevronDownIcon } from 'svelte-feather-icons';
   import rippleEffect from '../utils/ripple.js';
 
   export let classname = '';
@@ -25,7 +26,6 @@
 
   export let disabled = false;
   export let label = '';
-  export let away = null;
   export let href = null;
   export let chevron = false;
   export let badge = false;
@@ -43,10 +43,15 @@
   ].filter(v => v !== false);
 </script>
 
+<style>
+  :global(.ml) {
+    margin-left: .4em;
+  }
+</style>
+
 {#if href}
   <a
     {href}
-    target={away && '_blank'}
     class="btn {classes.join(' ')} {classname}"
     on:click
     use:rippleEffect
@@ -54,9 +59,6 @@
     rel="prefetch"
   >
     <slot />
-    {#if away}
-      <svg src="images/icons/external-link.svg" class="icon ml" />
-    {/if}
   </a>
 {:else}
   <button
@@ -76,7 +78,7 @@
     {/if}
 
     {#if chevron}
-      <svg src="images/icons/chevron-down.svg" class="icon ml chevron" />
+      <ChevronDownIcon size="24" class="icon ml chevron" />
     {/if}
   </button>
 {/if}

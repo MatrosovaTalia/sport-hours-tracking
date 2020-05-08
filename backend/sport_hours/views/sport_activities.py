@@ -115,7 +115,8 @@ class AssignedStudentsAPI(MethodView):
         student = User.query.get_or_404(request.json['student_email'])
         activity = SportActivity.query.get_or_404(activity_id)
 
-        if len(activity.assigned_students) >= activity.max_students:
+        if (activity.max_students is not None
+                and len(activity.assigned_students) >= activity.max_students):
             abort(400, 'Cannot assign any more students here.')
 
         activity.assigned_students.append(student)

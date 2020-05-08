@@ -137,10 +137,9 @@
     <div class="activity-name">
       {activity.name}
     </div>
-    {#if activity.leader === currentUser.email}
-      <Button>
-        <Edit3Icon size=24 class="icon mr" />
-        edit activity
+    {#if activity.chat_link != null}
+      <Button href="{activity.chat_link}">
+        join Telegram chat
       </Button>
     {/if}
   </header>

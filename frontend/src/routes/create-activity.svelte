@@ -37,6 +37,8 @@
 
   let name;
   let leaderEmail;
+  let maxStudents;
+  let chatLink;
 
   const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
   let schedule = weekdays.map(day => ({ day, start: null, end: null, location: null }));
@@ -45,6 +47,8 @@
     const payload = {
       name: name,
       leader: leaderEmail,
+      max_students: maxStudents || null,
+      chat_link: chatLink,
       schedule_records: [],
     };
 
@@ -105,6 +109,17 @@
       required
     >
       <UserPicker {users} bind:value={leaderEmail} />
+    </FormField>
+    <FormField
+      title="Maximum amount of students"
+      subtitle="Leave blank for no restrictions"
+    >
+      <TextField type="number" bind:value={maxStudents} />
+    </FormField>
+    <FormField
+      title="Link to the Telegram chat"
+    >
+      <TextField bind:value={chatLink} />
     </FormField>
     <FormField
       title="Schedule"
@@ -184,7 +199,8 @@
 
   form :global(.form-field .name) {
     font-weight: 500;
-    width: 8em;
+    width: 15em;
+    margin-right: 1em;
   }
 
   form :global(.text-field-wrapper) {
@@ -204,15 +220,5 @@
 
   form :global(.time-picker) {
     padding: 1em;
-  }
-
-  hr {
-    margin: 3rem 0 1rem;
-  }
-
-  hr::after {
-    font-weight: 500;
-    color: #220ca4;
-    font-size: 1em;
   }
 </style>

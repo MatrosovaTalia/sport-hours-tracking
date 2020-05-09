@@ -6,6 +6,7 @@
     const data = await getInitialData(this, session, new Map([
       ['currentUser', '/user'],
       ['activity', `/activities/${page.params.id}`],
+      ['userActivities', '/activities/assigned'],
     ]));
 
     if (data.currentUser == null) {
@@ -22,7 +23,8 @@
     Edit3Icon,
     ChevronDownIcon,
     CalendarIcon,
-    CheckIcon
+    CheckIcon,
+    LogInIcon
   } from 'svelte-feather-icons';
   import Button from '@/components/button.svelte';
   import DatePicker from '@/components/date-picker.svelte';
@@ -34,6 +36,8 @@
 
   export let currentUser;
   export let activity;
+  export let userActivities;
+  let is_participant;
   let sportHours = null;
   let hoursPerDay = null;
   let hours_total = 0;
@@ -87,6 +91,7 @@
         }
       });
     }
+    is_participant = userActivities.includes({"id": activity.id, "is_club": activity.is_club, "leader": activity.leader, "max_students": activity.max_students, "name": activity.name});
   })
 
   $: getHoursForDay(selectedDate);
@@ -128,6 +133,12 @@
       setTimeout(() => autosaved = false, 1500);
     }
   }
+
+  async function enroll(){
+    let resp = await api.post(`/activities/${activity.id}/assigned`, {
+      data: {student_email: currentUser.email,},
+    });
+  }
 </script>
 
 <div class="page">
@@ -143,6 +154,10 @@
         join Telegram chat
       </Button>
     {/if}
+    <Button isFilled on:click={enroll}>
+      <LogInIcon size=24 class="icon mr" />
+      enroll
+    </Button>
   </header>
   <main class:student={currentUser.email !== activity.leader}>
     {#if currentUser.email !== activity.leader}
@@ -257,6 +272,12 @@
         </div>
       </div>
     {/if}
+    {is_participant}
+    {activity.id} 
+    {activity.is_club} 
+    {activity.leader}
+    {activity.max_students}
+    {activity.name}
   </main>
 </div>
 

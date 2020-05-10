@@ -28,7 +28,7 @@
 
 <strong>
 	{#if currentUser == null}
-		Not logged in
+		{ goto('/log-in') }
 	{:else}
 		Logged in as {currentUser.full_name}{currentUser.is_admin ? ' (admin)': ''}
 	{/if}

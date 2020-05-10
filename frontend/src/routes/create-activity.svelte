@@ -7,7 +7,7 @@
       ['currentUser', '/user'],
     ]));
     if (currentUser == null) {
-      this.error(401, 'Log in, please');
+      goto('/log-in');
     }
     else if (!currentUser.is_admin) {
       this.error(403, 'Access denied');

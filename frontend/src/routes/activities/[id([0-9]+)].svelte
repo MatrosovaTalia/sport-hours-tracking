@@ -1,5 +1,6 @@
 <script context="module">
   import getInitialData from '@/utils/get-initial-data.js';
+  import { goto } from '@sapper/app';
 
   export async function preload(page, session) {
     const data = await getInitialData(this, session, new Map([
@@ -8,7 +9,7 @@
     ]));
 
     if (data.currentUser == null) {
-      this.error(401, 'Log in, please');
+      goto('/log-in');
     }
 
     return data;

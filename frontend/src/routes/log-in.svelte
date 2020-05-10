@@ -9,7 +9,7 @@
 
 <script>
   import * as api from '@/utils/api.js';
-  import { LogInIcon, ChevronDownIcon, ArrowRightIcon, LogOutIcon, } from 'svelte-feather-icons';
+  import { LogInIcon, ArrowRightIcon, } from 'svelte-feather-icons';
   import Button from '@/components/button.svelte';
   import Card from '@/components/card.svelte';
   import UserPicker from '@/components/user-picker.svelte';
@@ -24,7 +24,7 @@
     } 
     goto('/');
   }
-
+  
   async function logout() {
     let resp = await api.get(`/logout`);
     if (resp.ok) {
@@ -43,9 +43,6 @@
   <UserPicker {users} bind:value={chosenUser} />
   <Button isFilled isRound on:click={login} disabled={chosenUser == null}>
     <ArrowRightIcon size=24/>
-  </Button>
-  <Button isOutline isRound on:click={logout}>
-    <LogOutIcon size=24/>
   </Button>
   </div>
   </Card>

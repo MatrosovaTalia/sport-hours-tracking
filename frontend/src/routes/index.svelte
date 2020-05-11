@@ -29,7 +29,6 @@
 		<a href="/student-activity-assignment" rel="prefetch">Choose sport activity</a>
 		{#if currentUser.is_admin}
 			<a href="/admin-activity-assignment" rel="prefetch">Assign unassigned students</a>
-			<a href="/create-activity" rel="prefetch">Create a new sport activity</a>
 		{/if}
 	{/if}
 

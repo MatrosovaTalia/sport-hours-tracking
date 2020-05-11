@@ -37,7 +37,6 @@
   export let currentUser;
   export let activity;
   export let userActivities;
-  let is_participant;
   let sportHours = null;
   let hoursPerDay = null;
   let hours_total = 0;
@@ -57,6 +56,13 @@
       scheduleByWeekday[record.day] = [record];
     } else {
       scheduleByWeekday[record.day].push(record);
+    }
+  }
+
+  let is_participant = false;
+  for (let userActivity of userActivities) {
+    if (userActivity.id == activity.id) {
+      is_participant = true;
     }
   }
 
@@ -91,7 +97,6 @@
         }
       });
     }
-    is_participant = userActivities.includes({"id": activity.id, "is_club": activity.is_club, "leader": activity.leader, "max_students": activity.max_students, "name": activity.name});
   })
 
   $: getHoursForDay(selectedDate);
@@ -154,13 +159,17 @@
         join Telegram chat
       </Button>
     {/if}
-    <Button isFilled on:click={enroll}>
-      <LogInIcon size=24 class="icon mr" />
-      enroll
-    </Button>
+    {#if is_participant}
+      <div class="status"> <span class="marker"> &#11044</span> enrolled </div>
+    {:else}
+      <Button isFilled on:click={enroll}>
+        <LogInIcon size=24 class="icon mr" />
+        enroll
+      </Button>
+    {/if}
   </header>
   <main class:student={currentUser.email !== activity.leader}>
-    {#if currentUser.email !== activity.leader}
+    {#if is_participant && (currentUser.email !== activity.leader)}
       <div class="heading" >
         attendance
       </div>
@@ -232,8 +241,7 @@
           </table>
         </div>
       </div>
-    </div>
-    {#if currentUser.email === activity.leader}
+      {#if currentUser.email === activity.leader}
       <div class="attendance">
         <div class="heading">
           attendance
@@ -271,13 +279,8 @@
           {/each}
         </div>
       </div>
-    {/if}
-    {is_participant}
-    {activity.id} 
-    {activity.is_club} 
-    {activity.leader}
-    {activity.max_students}
-    {activity.name}
+      {/if}
+    </div>
   </main>
 </div>
 
@@ -465,5 +468,18 @@
   .datapicker {
     margin-left: 1em;
     white-space: nowrap;
+  }
+
+  .status {
+    font-weight: 500;
+    font-size: 1.2em;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+  .marker {
+    color: #220CA4;
+    margin: 1em;
+    font-size: .5em;
   }
 </style>

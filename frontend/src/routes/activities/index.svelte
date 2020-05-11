@@ -22,7 +22,6 @@
     StarIcon,
     ChevronRightIcon,
   } from 'svelte-feather-icons';
-  import { goto } from '@sapper/app';
   import Button from '@/components/button.svelte';
   import Card from '@/components/card.svelte';
   export let currentUser;

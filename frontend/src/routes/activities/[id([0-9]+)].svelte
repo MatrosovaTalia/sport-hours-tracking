@@ -60,11 +60,11 @@
   }
 
   let is_participant = false;
-  for (let userActivity of userActivities) {
-    if (userActivity.id == activity.id) {
-      is_participant = true;
-    }
-  }
+  $:  for (let userActivity of userActivities) {
+        if (userActivity.id == activity.id) {
+          is_participant = true;
+        }
+      }
 
   /* Replaces the "Z" timezone modifier for an explicit +00:00 */
   function isoForURL(date) {
@@ -143,6 +143,10 @@
     let resp = await api.post(`/activities/${activity.id}/assigned`, {
       data: {student_email: currentUser.email,},
     });
+    if (resp.ok) {
+      resp = await api.get('/activities/assigned');
+      userActivities = await resp.json();
+    }
   }
 </script>
 

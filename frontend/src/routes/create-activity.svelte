@@ -90,7 +90,7 @@
 
 <div class="page">
   <header>
-    <Button isRound href="/">
+    <Button isRound href="/activities">
       <ArrowLeftIcon size=24 class="icon" />
     </Button>
     <div class="title">

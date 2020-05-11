@@ -1,5 +1,6 @@
 <script context="module">
   import getInitialData from '@/utils/get-initial-data.js';
+  import { goto } from '@sapper/app';
 
   export async function preload(page, session) {
     const { unassignedStudents, currentUser } = await getInitialData(this, session, new Map([
@@ -7,7 +8,7 @@
       ['currentUser', '/user'],
     ]));
     if (currentUser == null) {
-      this.error(403, 'Log in, please');
+      this.redirect(302, '/log-in');
     }
     else if (!currentUser.is_admin) {
       this.error(403, 'Access denied');

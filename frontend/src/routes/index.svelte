@@ -1,14 +1,30 @@
 <script context="module">
   import getInitialData from '@/utils/get-initial-data.js';
   export async function preload(page, session) {
-    return await getInitialData(this, session, new Map([
+    const data = await getInitialData(this, session, new Map([
       ['currentUser', '/user'],
     ]));
+    if (data.currentUser == null) {
+      this.redirect(302, '/log-in');
+    }
+    return data;
+	
   }
 </script>
 
 <script>
-	export let currentUser;
+  import * as api from '@/utils/api.js';
+  import { goto } from '@sapper/app';
+  import { LogOutIcon, } from 'svelte-feather-icons';
+  import Button from '@/components/button.svelte';
+  export let currentUser;
+  
+  async function logout() {
+    let resp = await api.get(`/logout`);
+    if (resp.ok) {
+      goto('/log-in');
+    }
+  }
 </script>
 
 <svelte:head>
@@ -21,6 +37,9 @@
 	{:else}
 		Logged in as {currentUser.full_name}{currentUser.is_admin ? ' (admin)': ''}
 	{/if}
+    <Button isRound on:click={logout}>
+      <LogOutIcon size=24/>
+    </Button>
 </strong>
 <div style="display: flex; flex-direction: column;">
 	{#if currentUser != null}
@@ -31,13 +50,14 @@
 			<a href="/admin-activity-assignment" rel="prefetch">Assign unassigned students</a>
 		{/if}
 	{/if}
-
-	<a href="/log-in" rel="prefetch">Choose user</a>
 </div>
 
 <style>
 	strong {
-		display: block;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
 		margin-bottom: 1em;
 	}
 </style>

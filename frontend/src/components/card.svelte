@@ -6,3 +6,9 @@
 <div class="card {_class}">
   <slot />
 </div>
+
+<style>
+  div{
+    overflow: visible;
+  }
+</style>

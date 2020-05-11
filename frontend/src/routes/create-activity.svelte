@@ -7,7 +7,7 @@
       ['currentUser', '/user'],
     ]));
     if (currentUser == null) {
-      this.error(401, 'Log in, please');
+      this.redirect(302, '/log-in');
     }
     else if (!currentUser.is_admin) {
       this.error(403, 'Access denied');
@@ -21,7 +21,6 @@
     ArrowLeftIcon,
     CheckSquareIcon,
   } from 'svelte-feather-icons';
-  import { goto } from '@sapper/app';
   import Button from '@/components/button.svelte';
   import Card from '@/components/card.svelte';
   import TimePicker from '@/components/time-picker.svelte';

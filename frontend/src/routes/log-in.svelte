@@ -9,6 +9,10 @@
 
 <script>
   import * as api from '@/utils/api.js';
+  import { LogInIcon, ArrowRightIcon, } from 'svelte-feather-icons';
+  import Button from '@/components/button.svelte';
+  import Card from '@/components/card.svelte';
+  import UserPicker from '@/components/user-picker.svelte';
   import { goto } from '@sapper/app';
   export let users;
   let chosenUser = null;
@@ -20,7 +24,7 @@
     } 
     goto('/');
   }
-
+  
   async function logout() {
     let resp = await api.get(`/logout`);
     if (resp.ok) {
@@ -29,37 +33,49 @@
   }
 </script>
 
-
-<a href="/" rel="prefetch">Go back</a>
-<div>
-  <p id="textp">Choose user to enter the service:<p>
-  <select name="User" bind:value={chosenUser}>
-    <option disabled selected> – Choose User – </option>
-    {#each users as user(user.email)}
-      <option value={user.email}>{user.full_name}</option>
-    {/each}
-  </select>
-  <button type="button" on:click={login} disabled={chosenUser == null}>Continue</button>
-  <button type="button" on:click={logout}>Log out</button>
+<div class="main">
+  <Card width="400px">
+  <div class="heading">
+    <LogInIcon size=48 />
+    <p id="textp">Login<p>
+  </div>
+  <div class="select-user">
+  <UserPicker {users} bind:value={chosenUser} />
+  <Button isFilled isRound on:click={login} disabled={chosenUser == null}>
+    <ArrowRightIcon size=24/>
+  </Button>
+  </div>
+  </Card>
 </div>
 
 <style>
-  div{
-    font-family: Electrica, sans-serif;
+  .main{
+    font-family: Ubuntu, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #220ca4;
+  }
+  .heading{
+    font-family: Ubuntu, sans-serif;
+    margin: 15px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
   }
   #textp{
     font-weight: bold;
-    font-size: 25px;
+    font-size: 30px;
+    margin: 0px 0px 0px 15px;
   }
-  select{
-    background-color: rgb(222, 222, 222);
-    padding: 8px 8px 8px 8px;
-    font-family: Electrica, sans-serif;
-    border-radius: 10px;
-  }
-  button{
-    padding: 8px 8px 8px 8px;
-    font-family: Electrica, sans-serif;
-    border-radius: 10px;
+  .select-user{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px;
+    position: relative;
+    z-index: 10;
   }
 </style>

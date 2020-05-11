@@ -7,7 +7,7 @@
       ['assignments', '/activities/assigned'],
     ]));
     if (data.currentUser == null) {
-      this.error(403, 'Log in, please');
+      this.redirect(302, '/log-in');
     }
     return data;
   }
@@ -60,7 +60,7 @@
 
 <style>
   div{
-    font-family: Electrica, sans-serif;
+    font-family: Ubuntu, sans-serif;
   }
   #textp{
     font-weight: bold;
@@ -73,14 +73,14 @@
   }
   button{
     padding: 8px;
-    font-family: Electrica, sans-serif;
+    font-family: Ubuntu, sans-serif;
     border-radius: 10px;
   }
   table{
-    font-family: Electrica, sans-serif;
+    font-family: Ubuntu, sans-serif;
     font-size: 18px;
   }
   th{
-    color: darkviolet;
+    color: #220ca4;
   }
 </style>

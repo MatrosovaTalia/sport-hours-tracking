@@ -1,6 +1,5 @@
 <script context="module">
   import getInitialData from '@/utils/get-initial-data.js';
-  import { goto } from '@sapper/app';
   export async function preload(page, session) {
     const data = await getInitialData(this, session, new Map([
       ['activities', '/activities'],
@@ -8,7 +7,7 @@
       ['assignments', '/activities/assigned'],
     ]));
     if (data.currentUser == null) {
-      goto('/log-in');
+      this.redirect(302, '/log-in');
     }
     return data;
   }
@@ -61,7 +60,7 @@
 
 <style>
   div{
-    font-family: Electrica, sans-serif;
+    font-family: Ubuntu, sans-serif;
   }
   #textp{
     font-weight: bold;
@@ -74,14 +73,14 @@
   }
   button{
     padding: 8px;
-    font-family: Electrica, sans-serif;
+    font-family: Ubuntu, sans-serif;
     border-radius: 10px;
   }
   table{
-    font-family: Electrica, sans-serif;
+    font-family: Ubuntu, sans-serif;
     font-size: 18px;
   }
   th{
-    color: darkviolet;
+    color: #220ca4;
   }
 </style>

@@ -9,7 +9,7 @@
     ]));
 
     if (data.currentUser == null) {
-      goto('/log-in');
+      this.redirect(302, '/log-in');
     }
 
     return data;

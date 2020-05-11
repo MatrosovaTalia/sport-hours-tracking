@@ -1,9 +1,14 @@
 <script context="module">
   import getInitialData from '@/utils/get-initial-data.js';
   export async function preload(page, session) {
-    return await getInitialData(this, session, new Map([
+    const data = await getInitialData(this, session, new Map([
       ['currentUser', '/user'],
     ]));
+    if (data.currentUser == null) {
+      this.redirect(302, '/log-in');
+    }
+    return data;
+	
   }
 </script>
 
@@ -28,7 +33,7 @@
 
 <strong>
 	{#if currentUser == null}
-		{ goto('/log-in') }
+		Not logged in
 	{:else}
 		Logged in as {currentUser.full_name}{currentUser.is_admin ? ' (admin)': ''}
 	{/if}

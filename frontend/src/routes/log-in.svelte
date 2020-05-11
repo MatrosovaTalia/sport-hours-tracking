@@ -50,14 +50,14 @@
 
 <style>
   .main{
-    font-family: Electrica, sans-serif;
+    font-family: Ubuntu, sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
     color: #220ca4;
   }
   .heading{
-    font-family: Electrica, sans-serif;
+    font-family: Ubuntu, sans-serif;
     margin: 15px;
     display: flex;
     flex-direction: row;

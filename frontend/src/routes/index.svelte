@@ -81,14 +81,6 @@
     flex: 1;
   }
 
-	strong {
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-		justify-content: space-between;
-		margin-bottom: 1em;
-	}
-
   :global(.ml-2) {
     margin-left: .8em;
   }

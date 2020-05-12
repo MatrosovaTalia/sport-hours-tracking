@@ -6,6 +6,7 @@
     const data = await getInitialData(this, session, new Map([
       ['currentUser', '/user'],
       ['activity', `/activities/${page.params.id}`],
+      ['userActivities', '/activities/assigned'],
     ]));
 
     if (data.currentUser == null) {
@@ -22,7 +23,8 @@
     Edit3Icon,
     ChevronDownIcon,
     CalendarIcon,
-    CheckIcon
+    CheckIcon,
+    LogInIcon
   } from 'svelte-feather-icons';
   import Button from '@/components/button.svelte';
   import DatePicker from '@/components/date-picker.svelte';
@@ -34,6 +36,7 @@
 
   export let currentUser;
   export let activity;
+  export let userActivities;
   let sportHours = null;
   let hoursPerDay = null;
   let hours_total = 0;
@@ -55,6 +58,13 @@
       scheduleByWeekday[record.day].push(record);
     }
   }
+
+  let is_participant = false;
+  $:  for (let userActivity of userActivities) {
+        if (userActivity.id == activity.id) {
+          is_participant = true;
+        }
+      }
 
   /* Replaces the "Z" timezone modifier for an explicit +00:00 */
   function isoForURL(date) {
@@ -128,6 +138,16 @@
       setTimeout(() => autosaved = false, 1500);
     }
   }
+
+  async function enroll(){
+    let resp = await api.post(`/activities/${activity.id}/assigned`, {
+      data: {student_email: currentUser.email,},
+    });
+    if (resp.ok) {
+      resp = await api.get('/activities/assigned');
+      userActivities = await resp.json();
+    }
+  }
 </script>
 
 <div class="page">
@@ -143,9 +163,17 @@
         join Telegram chat
       </Button>
     {/if}
+    {#if is_participant}
+      <div class="status"> <span class="marker"> &#11044</span> enrolled </div>
+    {:else}
+      <Button isFilled on:click={enroll}>
+        <LogInIcon size=24 class="icon mr" />
+        enroll
+      </Button>
+    {/if}
   </header>
   <main class:student={currentUser.email !== activity.leader}>
-    {#if currentUser.email !== activity.leader}
+    {#if is_participant && (currentUser.email !== activity.leader)}
       <div class="heading" >
         attendance
       </div>
@@ -217,8 +245,7 @@
           </table>
         </div>
       </div>
-    </div>
-    {#if currentUser.email === activity.leader}
+      {#if currentUser.email === activity.leader}
       <div class="attendance">
         <div class="heading">
           attendance
@@ -256,7 +283,8 @@
           {/each}
         </div>
       </div>
-    {/if}
+      {/if}
+    </div>
   </main>
 </div>
 
@@ -439,10 +467,24 @@
   .gorizontal-box {
     display: flex;
     flex-direction: row;
+    width: 100%;
   }
 
   .datapicker {
     margin-left: 1em;
     white-space: nowrap;
+  }
+
+  .status {
+    font-weight: 500;
+    font-size: 1.2em;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+  .marker {
+    color: #220CA4;
+    margin: 1em;
+    font-size: .5em;
   }
 </style>

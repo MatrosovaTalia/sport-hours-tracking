@@ -8,7 +8,7 @@
       this.redirect(302, '/log-in');
     }
     return data;
-	
+
   }
 </script>
 
@@ -18,7 +18,7 @@
   import { LogOutIcon, } from 'svelte-feather-icons';
   import Button from '@/components/button.svelte';
   export let currentUser;
-  
+
   async function logout() {
     let resp = await api.get(`/logout`);
     if (resp.ok) {
@@ -31,28 +31,56 @@
 	<title>Sport Hours Tracker</title>
 </svelte:head>
 
-<strong>
-	{#if currentUser == null}
-		Not logged in
-	{:else}
+<div class="page">
+  <header>
+    <div class="title">
+      Sport Hours Tracker
+    </div>
 		Logged in as {currentUser.full_name}{currentUser.is_admin ? ' (admin)': ''}
-	{/if}
-    <Button isRound on:click={logout}>
-      <LogOutIcon size=24/>
+    <Button isRound on:click={logout} classname="ml-2">
+      <LogOutIcon size=24 />
     </Button>
-</strong>
-<div style="display: flex; flex-direction: column;">
-	{#if currentUser != null}
-		<a href="/activities">Browse activities</a>
-		<a href="/check-hours" rel="prefetch">View attendance statistics</a>
-		<a href="/student-activity-assignment" rel="prefetch">Choose sport activity</a>
-		{#if currentUser.is_admin}
-			<a href="/admin-activity-assignment" rel="prefetch">Assign unassigned students</a>
-		{/if}
-	{/if}
+  </header>
+
+  <div style="display: flex; flex-direction: column; margin-top: 4em;">
+    <Button isRectangle isOutline href="/activities">
+      Browse activities
+    </Button>
+    {#if currentUser.is_admin}
+      <Button isRectangle isOutline classname="mt-2" href="/admin-activity-assignment">
+        Assign unassigned students
+      </Button>
+    {/if}
+  </div>
 </div>
 
 <style>
+  :global(body) {
+    max-width: unset;
+  }
+
+  .page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: Ubuntu, sans-serif;
+  }
+
+  header {
+    width: 80%;
+    padding: 1em 2em;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+  }
+
+  .title {
+    margin-left: 1em;
+    font-size: 1.5em;
+    font-weight: 500;
+    flex: 1;
+  }
+
 	strong {
 		display: flex;
 		flex-direction: row;
@@ -60,4 +88,16 @@
 		justify-content: space-between;
 		margin-bottom: 1em;
 	}
+
+  :global(.ml-2) {
+    margin-left: .8em;
+  }
+
+  :global(.mt-2) {
+    margin-top: .8em;
+  }
+
+  .page :global(.btn.rectangle) {
+    justify-content: center;
+  }
 </style>

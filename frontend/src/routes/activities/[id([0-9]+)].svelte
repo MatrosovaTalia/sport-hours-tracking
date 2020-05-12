@@ -467,6 +467,7 @@
   .gorizontal-box {
     display: flex;
     flex-direction: row;
+    width: 100%;
   }
 
   .datapicker {

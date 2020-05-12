@@ -121,6 +121,8 @@
     margin-top: 2em;
     display: grid;
     justify-items: start;
+    grid-template-columns: repeat(auto-fill, 16em);
+    gap: 2em;
   }
 
   .student-grid :global(.btn) {
